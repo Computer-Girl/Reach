@@ -1,0 +1,82 @@
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+
+    <!-- App logistics -->
+    <string name="app_name">Reach</string>
+
+    <!-- Bluetooth Activity -->
+    <string name="Bluetooth_label">Bluetooth Setup</string>
+    <string name="Bluetooth_button_setup"> Network Configuration</string>
+    <string name="Bluetooth_list_paired_devices">Paired Devices</string>
+    <string name="Bluetooth_button_scan_devices">Scan for Devices</string>
+    <string name="Bluetooth_list_available_devices">Available Devices</string>
+    <string name="Bluetooth_move_network">Move to Network</string>
+    <string name="Bluetooth_error_scan">Unable to find bluetooth devices</string>
+    <string name="Bluetooth_error_connect">Unable to connect to device</string>
+    <string name="Bluetooth_error_support">Bluetooth not supported on this device</string>
+    <string name="Bluetooth_not_connected">You are not connected to a device</string>
+    <string name="Bluetooth_not_enabled_leaving">Bluetooth was not enabled. Leaving Bluetooth Chat.</string>
+    <string name="Bluetooth_title_connecting">connecting&#8230;</string>
+    <string name="Bluetooth_title_connected_to">connected to <xliff:g id="device_name">%1$s</xliff:g></string>
+    <string name="Bluetooth_title_not_connected">not connected</string>
+
+
+    <!--  DeviceList -->
+    <string name="scanning">scanning for devices&#8230;</string>
+    <string name="select_device">select a device to connect</string>
+    <string name="none_paired">No devices have been paired</string>
+    <string name="none_found">No devices found</string>
+    <string name="title_paired_devices">Paired Devices</string>
+    <string name="title_other_devices">Other Available Devices</string>
+    <string name="button_scan">Scan for devices</string>
+
+
+    <!-- ToolBar Activities -->
+    <string name="navigation_action_notifications">Notifications</string>
+    <string name="navigation_action_bluetooth">Bluetooth Status</string>
+    <string name="navigation_action_discovery">Make discoverable</string>
+
+    <!-- Navigation Drawer Activity-->
+    <string name="navigation_open">Open navigation drawer</string>
+    <string name="navigation_close">Close navigation drawer</string>
+    <string name="navigation_label_intern">MeshNetwork Intern Team</string>
+    <string name="navigation_label_purpose_application">Purpose and Applications</string>
+    <string name="navigation_label_hardware">Hardware Specs</string>
+    <string name="navigation_title_sensors">Sensors</string>
+    <string name="navigation_label_sensor_motion">Motion</string>
+    <string name="navigation_label_sensor_gas">Gas</string>
+    <string name="navigation_label_sensor_temp">Temperature</string>
+    <string name="navigation_label_sensor_light">Ambient Light</string>
+    <string name="navigation_router_description">Router</string>
+    <string name="navigation_node_description">Node</string>
+    <string name="navigation_bluetooth_status">Bluetooth status</string>
+
+
+    <!-- Network Activity -->
+    <string name="Network_label">Network</string>
+    <string name="Network_sensor_0">Sensor 0</string>
+    <string name="Network_sensor_1">Sensor 1</string>
+    <string name="Network_sensor_2">Sensor 2</string>
+
+
+    <!-- Sensor Activities from Nav Bar -->
+    <string name="display0">\u0020\u0020\u0020data</string>
+    <string name="display1">\u0020\u0020\u0020data</string>
+    <string name="display2">\u0020\u0020\u0020data</string>
+
+
+    <!-- Node Data Activity -->
+    <string name="NodeData_label">Data</string>
+
+
+    <!-- Notifications Create Edit Activity -->
+    <string name="notifications_create_edit_edit">Edit</string>
+    <string name="notifications_create_edit_delete">Delete</string>
+    <string name="notifications_create_edit_save">Save </string>
+    <string name="notifications_create_edit_confirm_deletion">Confirm notification deletion.</string>
+    <string name="notifications_create_edit_confirm">CONFIRM</string>
+    <string name="notifications_create_edit_cancel">Cancel</string>
+    <string name="title_activity_activity_edit">CreateOrEditActivity</string>
+    <string name="notifications_create_edit_permission">Do you want to receive notifications?</string>
+
+</resources>
+

@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:id="@+id/textView11"
+            android:layout_width="251dp"
+            android:layout_height="50dp"
+            android:paddingLeft="30dp"
+            android:text="Temperature"
+            android:textColor="@android:color/holo_blue_bright"/>
+
+        <CheckBox
+            android:id="@+id/temp_checkbox"
+            android:layout_width="236dp"
+            android:layout_height="wrap_content"
+            android:text="Notify"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:id="@+id/textView0"
+            android:layout_width="250dp"
+            android:layout_height="50dp"
+            android:text="Motion"
+            android:paddingLeft="30dp"
+            android:textColor="@android:color/holo_green_light" />
+
+        <CheckBox
+            android:id="@+id/motion_checkbox"
+            android:layout_width="236dp"
+            android:layout_height="wrap_content"
+            android:text="Notify"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="250dp"
+            android:layout_height="50dp"
+            android:text="Ambient Light"
+            android:paddingLeft="30dp"
+            android:textColor="@android:color/holo_red_dark"/>
+
+        <CheckBox
+            android:id="@+id/light_checkbox"
+            android:layout_width="236dp"
+            android:layout_height="wrap_content"
+            android:text="Notify"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="249dp"
+            android:layout_height="50dp"
+            android:text = "Select All"
+            android:textColor="@android:color/holo_purple"
+            android:paddingLeft="30dp"/>
+
+        <CheckBox
+            android:id="@+id/checkBox"
+            android:layout_width="239dp"
+            android:layout_height="wrap_content"
+            android:text = "Notify"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/notifications_setup_button_done"
+            android:layout_width="349dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/button"
+            android:text="DONE"
+            android:paddingLeft="10dp"
+            android:textColor="@android:color/white" />
+    </LinearLayout>
+
+
+</LinearLayout>
