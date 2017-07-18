@@ -3,10 +3,13 @@
     <color name="colorPrimary">#3CB371</color>
     <color name="colorPrimaryDark">#000000</color>
     <color name="colorWhite">#FFFFFF</color>
-    <color name="colorBackground">#808080</color>
+    <color name="colorBackground">#FFFFFF</color>
     <color name="colorRed">#FFFF4444</color>
     <color name="colorAccent">#000000</color>
     <color name="colorScanBlue">#0000FF</color>
     <color name="colorScanGreen">#008000</color>
+    <color name="snowflake">#93d4f2</color>
+    <color name="motion_man">#cd73dd</color>
+    <color name="light_bulb">#ffd000</color>
 
 </resources>
