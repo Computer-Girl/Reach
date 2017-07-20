@@ -26,8 +26,6 @@ import com.example.a85314.meshnetwork.R;
 import com.example.a85314.meshnetwork.Database.*;
 import com.example.a85314.meshnetwork.UI.MeshNetDiagram;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
 
 //TODO: data may not have ; make sure to check for that
 
