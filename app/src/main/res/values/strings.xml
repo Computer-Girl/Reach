@@ -3,6 +3,10 @@
     <!-- App logistics -->
     <string name="app_name">Reach</string>
 
+    <!--Shared Preferences-->
+    <string name="preference_file_key">settings</string>
+    <string name="convert_to_fahrenheit">f_on</string>
+
     <!-- Bluetooth Activity -->
     <string name="Bluetooth_label">Bluetooth Setup</string>
     <string name="Bluetooth_button_setup"> Network Configuration</string>

@@ -1,6 +1,7 @@
 package com.example.a85314.meshnetwork.UI;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -318,6 +319,7 @@ public class MeshNetDiagram extends ViewGroup {
         private EditText name;
         private TextView rssi;
         private TextView temp;
+        private TextView tempLabel;
         private TextView motion;
         private TextView light;
         private LinearLayout neighborView;
@@ -329,6 +331,25 @@ public class MeshNetDiagram extends ViewGroup {
          */
         private Popup(int size){
             LayoutInflater layoutInflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            View.OnClickListener tempToggle = new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    SharedPreferences sharedPreferences =
+                            context.getSharedPreferences(context.getString(R.string.preference_file_key),
+                                    Context.MODE_PRIVATE);
+                    boolean currentValue =
+                            sharedPreferences.getBoolean(context.getString(R.string.convert_to_fahrenheit),
+                                    false);
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    if (currentValue){
+                        editor.putBoolean(context.getString(R.string.convert_to_fahrenheit), false);
+                    }else{
+                        editor.putBoolean(context.getString(R.string.convert_to_fahrenheit), true);
+                    }
+                    editor.apply();
+                    update();
+                }
+            };
             ViewGroup viewGroup = (ViewGroup) layoutInflater.inflate(R.layout.popup, null);
             popup = new PopupWindow(viewGroup, size, size, true);
             popup.setAnimationStyle(R.style.Animation);
@@ -369,6 +390,9 @@ public class MeshNetDiagram extends ViewGroup {
             });
             rssi = (TextView) viewGroup.findViewById(R.id.rssiDisplay);
             temp = (TextView) viewGroup.findViewById(R.id.tempDisplay);
+            temp.setOnClickListener(tempToggle);
+            tempLabel = (TextView) viewGroup.findViewById(R.id.tempLabel);
+            tempLabel.setOnClickListener(tempToggle);
             motion = (TextView) viewGroup.findViewById(R.id.motionDisplay);
             light = (TextView) viewGroup.findViewById(R.id.lightDisplay);
             closeButton = (ImageButton) viewGroup.findViewById(R.id.closeButton);
@@ -421,6 +445,9 @@ public class MeshNetDiagram extends ViewGroup {
          * Update the displayed data.
          */
         private void update(){
+            SharedPreferences sharedPreferences =
+                    context.getSharedPreferences(context.getString(R.string.preference_file_key),
+                            Context.MODE_PRIVATE);
             if (n == null){
                 return;
             }
@@ -428,8 +455,18 @@ public class MeshNetDiagram extends ViewGroup {
             if (!name.isFocused()) {
                 name.setText(nameString.toCharArray(), 0, nameString.length());
             }
-            String tempString = Double.toString(n.getTemp())+ " °C";
-//            Log.i("Popup", "temp updated to "+tempString);
+            String tempString;
+            double tempNum;
+            if (sharedPreferences.getBoolean(context.getString(R.string.convert_to_fahrenheit),
+                    false)){
+                tempNum = n.getTemp()*1.8+32;
+                tempNum = Math.round(tempNum*10.0)/10.0;
+                tempString = Double.toString(tempNum)+" °F";
+            } else {
+                tempNum = n.getTemp();
+                tempNum = Math.round(tempNum*10.0)/10.0;
+                tempString = Double.toString(tempNum)+ " °C";
+            }
             temp.setText(tempString.toCharArray(), 0, tempString.length());
             if (n.isMotion()){
                 String yes = "Yes";
@@ -440,7 +477,7 @@ public class MeshNetDiagram extends ViewGroup {
             }
             String rssiString = "-"+Double.toString(n.getRssi())+" dBm";
             rssi.setText(rssiString.toCharArray(), 0, rssiString.length());
-            String lightString = Double.toString(n.getLight());
+            String lightString = Double.toString(1-Math.round(n.getLight()*100.0)/100.0);
             light.setText(lightString.toCharArray(), 0, lightString.length());
 
             neighborView.removeAllViews();
@@ -461,6 +498,8 @@ public class MeshNetDiagram extends ViewGroup {
                 neighborView.addView(neighborText);
             }
         }
+
+
     }
 
     /**
