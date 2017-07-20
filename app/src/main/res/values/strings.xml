@@ -78,5 +78,11 @@
     <string name="title_activity_activity_edit">CreateOrEditActivity</string>
     <string name="notifications_create_edit_permission">Do you want to receive notifications?</string>
 
+    <!-- Network Diagram -->
+    <string name="temperature">Temperature:</string>
+    <string name="motion">Motion:</string>
+    <string name="ambient_light">Ambient Light:</string>
+    <string name="neighboring_nodes">Neighboring Nodes:</string>
+
 </resources>
 

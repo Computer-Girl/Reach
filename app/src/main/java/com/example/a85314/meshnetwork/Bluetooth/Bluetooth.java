@@ -10,26 +10,21 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.LinearLayout.LayoutParams;
-import com.example.a85314.meshnetwork.NodeData.NodeData;
 import com.example.a85314.meshnetwork.Notifications.Notifications;
-import com.example.a85314.meshnetwork.Notifications.NotificationsPermission;
 import com.example.a85314.meshnetwork.R;
-import com.example.a85314.meshnetwork.Database.DatabaseContract;
+import com.example.a85314.meshnetwork.Database.*;
+import com.example.a85314.meshnetwork.UI.MeshNetDiagram;
 import java.util.ArrayList;
 
 //TODO: data may not have ; make sure to check for that
@@ -54,9 +49,10 @@ public class Bluetooth extends AppCompatActivity
     private static final int REQUEST_ENABLE_BT = 2;
 
     // Layout Views
-    private Button scan_button;
-    private DatabaseContract dbHelper;
-    private LinearLayout Nodes;
+//    private Button scan_button;
+//    private DatabaseContract dbHelper;
+    private MeshNetDiagram netDiagram;
+    private NodeDatabaseHelper database;
 
 
     /**
@@ -82,9 +78,7 @@ public class Bluetooth extends AppCompatActivity
     /**
      * Setting layout views, requesting permissions during runtime, initializing variables,
      * getting bluetooth adapter,
-     * @param savedInstanceState
      */
-
     Context context;
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -95,20 +89,23 @@ public class Bluetooth extends AppCompatActivity
 
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 2);
 
-        /** initializing Database helper object **/
-        dbHelper = new DatabaseContract(getApplicationContext(), "pulling sensor data", null, 1);
+        // initializing Database helper object
+        database = new NodeDatabaseHelper(context);
+//        dbHelper = new DatabaseContract(getApplicationContext(), "pulling sensor data", null, 1);
 
 
-        /**initializing variables used in layout **/
-        Nodes = (LinearLayout) findViewById(R.id.Nodes);
-        scan_button = (Button) findViewById(R.id.scan_button);
+        // initializing variables used in layout
+
+//        scan_button = (Button) findViewById(R.id.scan_button);
         //TextViewRef = new ArrayList<TextView>();
+        netDiagram = (MeshNetDiagram) findViewById(R.id.Net);
+        netDiagram.setHubConnected(false);
 
-        /** fetching local Bluetooth adapter **/
+        // fetching local Bluetooth adapter
         BAdapter = BluetoothAdapter.getDefaultAdapter();
 
 
-        /**checking if device is Bluetooth compatible **/
+        // checking if device is Bluetooth compatible
         if (BAdapter == null) {
 
             new AlertDialog.Builder(this)
@@ -128,35 +125,6 @@ public class Bluetooth extends AppCompatActivity
     }
 
 
-    /**
-     * Sets onClickListener for dynamically generated TextViews
-     * Starts new activity that displays all sensor data, RSSI,
-     * connected nodes and their corresponding LQI readings
-     * @param textView
-     * @param temp
-     * @param motion
-     * @param light
-     * @param RSSI
-     */
-    public void setonClick(TextView textView, final String temp, final String motion, final String light, final String RSSI) {
-
-
-        textView.setOnClickListener(new View.OnClickListener() {
-
-            public void onClick(View v) {
-                Toast.makeText(getApplicationContext(), temp + " " + motion + " " + light + " " + RSSI, Toast.LENGTH_LONG).show();
-
-                Intent test = new Intent(Bluetooth.this, NodeData.class);
-                test.putExtra("temp", temp);
-                test.putExtra("motion", motion);
-                test.putExtra("light", light);
-                test.putExtra("RSSI", RSSI);
-                startActivity(test);
-
-            }
-        });
-
-    }
 
 
     /**
@@ -212,14 +180,14 @@ public class Bluetooth extends AppCompatActivity
                 mChatService.start();
             }
         }
-        scan_button.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-
-                Intent serverIntent = new Intent(getApplicationContext(), DeviceList.class);
-                startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE_INSECURE);
-
-            }
-        });
+//        scan_button.setOnClickListener(new View.OnClickListener() {
+//            public void onClick(View v) {
+//
+//                Intent serverIntent = new Intent(getApplicationContext(), DeviceList.class);
+//                startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE_INSECURE);
+//
+//            }
+//        });
     }
 
     /**
@@ -227,18 +195,19 @@ public class Bluetooth extends AppCompatActivity
      */
     private void setupChat() {
 
-        /** Creating onClickListener for scan button **/
-        scan_button.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
+        Intent serverIntent = new Intent(getApplicationContext(), DeviceList.class);
+        startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE_INSECURE);
+        // Creating onClickListener for scan button
+//        scan_button.setOnClickListener(new View.OnClickListener() {
+//            public void onClick(View v) {
+//
+//
+//
+//            }
+//        });
 
-                Intent serverIntent = new Intent(getApplicationContext(), DeviceList.class);
-                startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE_INSECURE);
 
-            }
-        });
-
-
-        /** Initialize the Bluetooth Service **/
+        // Initialize the Bluetooth Service
         mChatService = new BluetoothChatService(getApplicationContext(), mHandler);
 
 
@@ -260,16 +229,27 @@ public class Bluetooth extends AppCompatActivity
                     {
                         case BluetoothChatService.STATE_CONNECTED:
                             Toast.makeText(getApplicationContext(), "Connected to " + mConnectedDeviceName, Toast.LENGTH_SHORT).show();
-                            scan_button.setVisibility(View.INVISIBLE);
-                            Nodes.setVisibility(View.VISIBLE);
+//                            scan_button.setVisibility(View.INVISIBLE);
+                            netDiagram.setHubConnected(true);
+                            netDiagram.updateData();
+
 
                             break;
 
                         case BluetoothChatService.STATE_NONE:
 
-                            scan_button.setVisibility(View.VISIBLE);
-                            dbHelper.Delete();
-                            Nodes.setVisibility(View.INVISIBLE);
+//                            scan_button.setVisibility(View.VISIBLE);
+//                            dbHelper.Delete();
+
+                            // sets all nodes as disconnected
+                            for (Node n : database.getAllNodes()){
+                                n.setConnected(false);
+                                database.updateNode(n);
+                            }
+                            netDiagram.setHubConnected(false);
+                            netDiagram.updateData();
+                            Intent serverIntent = new Intent(getApplicationContext(), DeviceList.class);
+                            startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE_INSECURE);
 
                     }
                     break;
@@ -279,7 +259,6 @@ public class Bluetooth extends AppCompatActivity
                     // construct a string from the valid bytes in the buffer
                     //TODO: check that info is at least 4 char long
                     String readMessage = new String(readBuf, 0, msg.arg1);
-                    removeViews();
 
                     testThread(readMessage);
 
@@ -351,57 +330,84 @@ public class Bluetooth extends AppCompatActivity
             @Override
             public void run() {
 
-                String[] messages = readMessage.split(";");
+                Log.i(TAG, "Recieved Bluetooth String: "+readMessage);
 
-                //Toast.makeText(getApplicationContext(), messages[0], Toast.LENGTH_LONG).show();
-
-                int dataSize = messages.length;
-
-                for (int j = 0; j < dataSize; j++) {
-
-
-                    String[] message = messages[j].split(" ");
-                    //Toast.makeText(getApplicationContext(), message[0], Toast.LENGTH_LONG).show();
-                    String node = message[0];
-
-                    String temp = message[1];
-
-                    String light = message[2];
-
-                    String motion = message[3];
-
-                    String RSSI = message[4];
-
-                    int size = message.length;
-                    String neighborLQI = "";
-
-                    for (int x = 5; x < size; x += 2) {
-
-                        //neighborLQI += message[x] + ": " + message[x + 1] + ", ";
-                        neighborLQI+= message[x];
-                    }
-
-                    //Toast.makeText(getApplicationContext(), neighborLQI, Toast.LENGTH_SHORT).show();
-
-                    boolean check = dbHelper.checkExist(node);
-
-                    if (check) {
-
-                        //checkPermissions(temp, motion, light);
-                        updateView(node, temp, motion, light, RSSI, neighborLQI);
-                        //Toast.makeText(getApplicationContext(), "placed in DB: " + cool, Toast.LENGTH_SHORT).show();
-
-                    } else {
-
-                        //checkPermissions(temp, motion, light);
-                        String cool = dbHelper.updateSensorData(node);
-                        ListViewUpdater(node, temp, motion, light, RSSI, neighborLQI);
-                        //Toast.makeText(getApplicationContext(), "placed in DB: " + cool, Toast.LENGTH_SHORT).show();
-
-                    }
-
+                if (readMessage.equals("@")){
+                    return;
                 }
-            }
+
+                for (Node n : database.getAllNodes()){
+                    n.setConnected(false);
+                    database.updateNode(n);
+                }
+
+                if (!readMessage.equals("!")) { // '!' indicates no nodes connected
+
+                    String[] messages = readMessage.split(";");
+
+                    //Toast.makeText(getApplicationContext(), messages[0], Toast.LENGTH_LONG).show();
+
+
+                    int dataSize = messages.length;
+                    for (String thisMessage : messages) {
+
+
+                        String[] message = thisMessage.split(" ");
+                        //Toast.makeText(getApplicationContext(), message[0], Toast.LENGTH_LONG).show();
+                        String mac = message[0];
+                        Node thisNode = new Node(mac);
+
+                        String temp = message[1];
+                        thisNode.setTemp(Double.valueOf(temp));
+
+                        String light = message[2];
+                        thisNode.setLight(Double.valueOf(light));
+
+                        String motion = message[3];
+                        thisNode.setMotion(motion.equals("1"));
+
+                        String RSSI = message[4];
+                        thisNode.setRssi(Double.valueOf(RSSI));
+
+                        int size = message.length;
+
+                        for (int x = 5; x < size; x += 2) {
+                            // TODO: make nodes disconnected by default
+                            thisNode.addNeighbor(message[x], Integer.valueOf(message[x + 1]));
+                            //neighborLQI += message[x] + ": " + message[x + 1] + ", ";
+//                        neighborLQI+= message[x];
+                        }
+                        thisNode.setConnected(true);
+                        database.addNode(thisNode);
+
+                        //Toast.makeText(getApplicationContext(), neighborLQI, Toast.LENGTH_SHORT).show();
+
+//                    boolean check = dbHelper.checkExist(node);
+
+//                    if (check) {
+
+                        //checkPermissions(temp, motion, light);
+                        //updateView(node, temp, motion, light, RSSI, neighborLQI);
+                        //Toast.makeText(getApplicationContext(), "placed in DB: " + cool, Toast.LENGTH_SHORT).show();
+
+//                    } else {
+
+                        //checkPermissions(temp, motion, light);
+//                        String cool = dbHelper.updateSensorData(node);
+                        //ListViewUpdater(node, temp, motion, light, RSSI, neighborLQI);
+                        //Toast.makeText(getApplicationContext(), "placed in DB: " + cool, Toast.LENGTH_SHORT).show();
+
+                    }
+                }
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        netDiagram.updateData();
+                    }
+                });
+
+                Log.i(TAG, "data updated");
+                }
 
         });
 
@@ -420,112 +426,15 @@ public class Bluetooth extends AppCompatActivity
      */
     private void connectDevice(Intent data, boolean insecure)
     {
-        /** Getting MAC Address **/
+        // Getting MAC Address
         String address = data.getExtras().getString(DeviceList.EXTRA_DEVICE_ADDRESS);
-        /** Getting Bluetooth device based of MAC Address **/
+        // Getting Bluetooth device based of MAC Address
         BluetoothDevice device = BAdapter.getRemoteDevice(address);
-        /** Using Bluetooth service object to connect device **/
+        // Using Bluetooth service object to connect device
         mChatService.connect(device, insecure);
     }
 
-    private void ListViewUpdater(final String NodeNumber, final String temp, final String motion, final String light, final String RSSI, final String neighborLQI) {
 
-
-        runOnUiThread(new Runnable() {
-
-            @Override
-            public void run() {
-
-                final LinearLayout linearLayout = (LinearLayout) findViewById(R.id.Nodes);
-                TextView textView = new TextView(context);
-                /**Cursor ID = dbHelper.getID(NodeNumber);
-                ID.moveToFirst();
-                int num = Integer.valueOf(ID.getString(0));
-                ID.close();**/
-                //textView.setId(num);
-                textView.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-                textView.setText(NodeNumber);
-                textView.setBackground(getResources().getDrawable(R.drawable.button));
-                linearLayout.addView(textView);
-
-                //TextView ref = (TextView) linearLayout.findViewById(num);
-                //TextViewRef.add(ref);
-                setonClick(textView, temp, motion, light, RSSI);
-
-            }
-
-        });
-
-
-    }
-
-    private void updateView(final String nodeNumber,final String temp, final String motion, final String light, final String RSSI, final String neighborLQI) {
-
-        /**TODO: send all data separately like above and update Database
-        *for node data display page query database and send over
-        *bundle messages
-         **/
-
-
-        /**Cursor cursorID = dbHelper.getID(nodeNumber);
-
-        int num;
-        cursorID.moveToFirst();
-        num = Integer.valueOf(cursorID.getString(0));
-        cursorID.close();
-
-
-        for (int x = 0; x < TextViewRef.size(); x++) {
-
-            TextView test = TextViewRef.get(x);
-            int ID = test.getId();
-            if (ID == num) {**/
-
-                runOnUiThread(new Runnable() {
-
-
-                    @Override
-                    public void run() {
-
-                        final LinearLayout linearLayout = (LinearLayout) findViewById(R.id.Nodes);
-                        TextView textView = new TextView(context);
-                       /** Cursor ID = dbHelper.getID(nodeNumber);
-                        ID.moveToFirst();
-                        int num = Integer.valueOf(ID.getString(0));
-                        ID.close();
-                        textView.setId(num);**/
-                        textView.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-                        textView.setText(nodeNumber);
-                        textView.setBackground(getResources().getDrawable(R.drawable.button));
-                        linearLayout.addView(textView);
-                        // check here to see if setOnClick worked with the values
-                        //TextView ref = (TextView) linearLayout.findViewById(num);
-                        //TextViewRef.add(ref);
-                        Toast.makeText(getApplicationContext(),"updated", Toast.LENGTH_SHORT).show();
-                        setonClick(textView, temp, motion, light, RSSI);
-                    }
-
-                });
-
-
-    }
-
-    public void removeViews()
-    {
-
-        runOnUiThread(new Runnable() {
-
-            @Override
-            public void run() {
-
-                final LinearLayout linearLayout = (LinearLayout) findViewById(R.id.Nodes);
-                linearLayout.removeAllViews();
-
-            }
-
-        });
-
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -633,7 +542,7 @@ public class Bluetooth extends AppCompatActivity
         }
 
 
-        /**
+        /*
         notifications = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
 
         if( lower != null & upper != null){
@@ -684,7 +593,7 @@ public class Bluetooth extends AppCompatActivity
                     .build();
             notifications.notify(0, notify);
 
-        }**/
+        }*/
 
 
     }
