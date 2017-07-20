@@ -89,6 +89,7 @@ public class Bluetooth extends AppCompatActivity
 
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 2);
 
+
         // initializing Database helper object
         database = new NodeDatabaseHelper(context);
 //        dbHelper = new DatabaseContract(getApplicationContext(), "pulling sensor data", null, 1);
