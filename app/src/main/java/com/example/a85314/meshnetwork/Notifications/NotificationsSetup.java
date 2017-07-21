@@ -3,6 +3,7 @@ package com.example.a85314.meshnetwork.Notifications;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -50,6 +51,8 @@ public class NotificationsSetup extends Activity {
         {
             label.setText("Temperature");
             label.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
+            lowerEdit.setInputType(InputType.TYPE_CLASS_NUMBER);
+            upperEdit.setInputType(InputType.TYPE_CLASS_NUMBER);
             String tempLower = getPreference(lowerTemp);
             String tempUpper = getPreference(upperTemp);
             if(tempLower!=null){
@@ -65,6 +68,8 @@ public class NotificationsSetup extends Activity {
 
             label.setText("Ambient Light");
             label.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
+            lowerEdit.setRawInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL|InputType.TYPE_CLASS_NUMBER);
+            upperEdit.setRawInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL|InputType.TYPE_CLASS_NUMBER);
             String lightLower = getPreference(lowerLight);
             String lightUpper = getPreference(upperLight);
             if(lightLower!=null){
