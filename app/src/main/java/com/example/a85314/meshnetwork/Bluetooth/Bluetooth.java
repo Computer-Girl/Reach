@@ -1,15 +1,39 @@
 package com.example.a85314.meshnetwork.Bluetooth;
 
+import java.util.Calendar;
+
+import android.net.Uri;
+import android.os.Bundle;
+import android.app.Activity;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.support.v4.app.NotificationCompat;
+import android.text.Editable;
+import android.view.Menu;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TimePicker;
+
 import android.Manifest;
 import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -26,11 +50,15 @@ import com.example.a85314.meshnetwork.R;
 import com.example.a85314.meshnetwork.Database.*;
 import com.example.a85314.meshnetwork.UI.MeshNetDiagram;
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 //TODO: data may not have ; make sure to check for that
 
 public class Bluetooth extends AppCompatActivity
 {
+
+
 
     private NotificationManager notifications;
     public static final String MY_PREFS_NAME = "Notifications";
@@ -68,10 +96,7 @@ public class Bluetooth extends AppCompatActivity
      * Member object for the chat services
      */
     private BluetoothChatService mChatService = null;
-    /*
-    * TODO: find way to delete dynamic reference to nodes if nodes haven't sent
-    * TODO: updates for information in a couple of pings
-     */
+
 
     /**
      * Setting layout views, requesting permissions during runtime, initializing variables,
@@ -81,22 +106,16 @@ public class Bluetooth extends AppCompatActivity
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.bluetooth);
         context = getApplicationContext();
 
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 2);
 
-
         // initializing Database helper object
         database = new NodeDatabaseHelper(context);
-//        dbHelper = new DatabaseContract(getApplicationContext(), "pulling sensor data", null, 1);
 
-
-        // initializing variables used in layout
-
-//        scan_button = (Button) findViewById(R.id.scan_button);
-        //TextViewRef = new ArrayList<TextView>();
         netDiagram = (MeshNetDiagram) findViewById(R.id.Net);
         netDiagram.setHubConnected(false);
 
@@ -119,7 +138,6 @@ public class Bluetooth extends AppCompatActivity
                     .show();
 
         }
-
 
     }
 
@@ -178,14 +196,7 @@ public class Bluetooth extends AppCompatActivity
                 mChatService.start();
             }
         }
-//        scan_button.setOnClickListener(new View.OnClickListener() {
-//            public void onClick(View v) {
-//
-//                Intent serverIntent = new Intent(getApplicationContext(), DeviceList.class);
-//                startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE_INSECURE);
-//
-//            }
-//        });
+
     }
 
     /**
@@ -195,16 +206,6 @@ public class Bluetooth extends AppCompatActivity
 
         Intent serverIntent = new Intent(getApplicationContext(), DeviceList.class);
         startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE_INSECURE);
-
-
-        // Creating onClickListener for scan button
-//        scan_button.setOnClickListener(new View.OnClickListener() {
-//            public void onClick(View v) {
-//
-//
-//
-//            }
-//        });
 
 
         // Initialize the Bluetooth Service
@@ -229,19 +230,12 @@ public class Bluetooth extends AppCompatActivity
                     {
                         case BluetoothChatService.STATE_CONNECTED:
                             Toast.makeText(getApplicationContext(), "Connected to " + mConnectedDeviceName, Toast.LENGTH_SHORT).show();
-//                            scan_button.setVisibility(View.INVISIBLE);
                             netDiagram.setHubConnected(true);
                             netDiagram.updateData();
-
 
                             break;
 
                         case BluetoothChatService.STATE_NONE:
-
-                            Log.i(TAG, "STATE_NONE");
-
-//                            scan_button.setVisibility(View.VISIBLE);
-//                            dbHelper.Delete();
 
                             // sets all nodes as disconnected
                             for (Node n : database.getAllNodes()){
@@ -250,7 +244,6 @@ public class Bluetooth extends AppCompatActivity
                             }
                             netDiagram.setHubConnected(false);
                             netDiagram.updateData();
-
                             Intent serverIntent = new Intent(getApplicationContext(), DeviceList.class);
                             startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE_INSECURE);
 
@@ -260,10 +253,10 @@ public class Bluetooth extends AppCompatActivity
                 case Constants.MESSAGE_READ:
                     byte[] readBuf = (byte[]) msg.obj;
                     // construct a string from the valid bytes in the buffer
-                    //TODO: check that info is at least 4 char long
+
                     String readMessage = new String(readBuf, 0, msg.arg1);
 
-                    testThread(readMessage);
+                    handleData(readMessage);
 
                     break;
                 case Constants.MESSAGE_DEVICE_NAME:
@@ -326,14 +319,14 @@ public class Bluetooth extends AppCompatActivity
     }
 
 
-    public void testThread(final String readMessage){
+    public void handleData(final String readMessage){
 
         Thread thread = new Thread(new Runnable() {
 
             @Override
             public void run() {
 
-                Log.i(TAG, "Recieved Bluetooth String: "+readMessage);
+                Log.i(TAG, "Received Bluetooth String: "+readMessage);
 
                 if (readMessage.equals("@")){
                     return;
@@ -352,7 +345,8 @@ public class Bluetooth extends AppCompatActivity
 
 
                     int dataSize = messages.length;
-                    for (String thisMessage : messages) {
+                    for (String thisMessage : messages)
+                    {
 
 
                         String[] message = thisMessage.split(" ");
@@ -377,28 +371,13 @@ public class Bluetooth extends AppCompatActivity
                         for (int x = 5; x < size; x += 2) {
                             // TODO: make nodes disconnected by default
                             thisNode.addNeighbor(message[x], Integer.valueOf(message[x + 1]));
-                            //neighborLQI += message[x] + ": " + message[x + 1] + ", ";
-//                        neighborLQI+= message[x];
+
                         }
                         thisNode.setConnected(true);
                         database.addNode(thisNode);
 
-                        //Toast.makeText(getApplicationContext(), neighborLQI, Toast.LENGTH_SHORT).show();
+                        notificationsCheck(temp, motion, light, mac);
 
-//                    boolean check = dbHelper.checkExist(node);
-
-//                    if (check) {
-
-                        //checkPermissions(temp, motion, light);
-                        //updateView(node, temp, motion, light, RSSI, neighborLQI);
-                        //Toast.makeText(getApplicationContext(), "placed in DB: " + cool, Toast.LENGTH_SHORT).show();
-
-//                    } else {
-
-                        //checkPermissions(temp, motion, light);
-//                        String cool = dbHelper.updateSensorData(node);
-                        //ListViewUpdater(node, temp, motion, light, RSSI, neighborLQI);
-                        //Toast.makeText(getApplicationContext(), "placed in DB: " + cool, Toast.LENGTH_SHORT).show();
 
                     }
                 }
@@ -493,10 +472,10 @@ public class Bluetooth extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    //public void Notifications()
 
 
-    public void checkPermissions(String temp, String motion, String light)
+
+    public void notificationsCheck(String temp, String motion, String light, String MAC)
     {
 
 
@@ -507,99 +486,140 @@ public class Bluetooth extends AppCompatActivity
 
 
         if (motionPermission != null){
-            if (motionPermission.equals("yes")){
-            Notifications(null, null, motion, "Motion");
+            if (motionPermission.equals("yes"))
+            {
+                if(motion.equals("0")){
+                    createNotification(Calendar.getInstance().getTimeInMillis(), 0.0, "", 0.0, MAC, "Motion");
+                }
             }
         }
+        //TODO: convert value of num to double
         if (tempPermission != null){
 
             if (tempPermission.equals("yes")) {
                 String lowerTemp = sharedpreferences.getString("lowerTemp", null);
                 String upperTemp = sharedpreferences.getString("upperTemp", null);
-                Notifications(lowerTemp, upperTemp, temp, "Temperature");
+                if((lowerTemp == null | upperTemp == null) ){
+                    Message msg = mHandler.obtainMessage(Constants.MESSAGE_TOAST);
+                    Bundle bundle = new Bundle();
+                    bundle.putString(Constants.TOAST, "Please set an upper and lower bound for temperature notifications");
+                    msg.setData(bundle);
+                    mHandler.sendMessage(msg);
+                }
+                else if (lowerTemp.equals("") | upperTemp.equals("")){
+                    Message msg = mHandler.obtainMessage(Constants.MESSAGE_TOAST);
+                    Bundle bundle = new Bundle();
+                    bundle.putString(Constants.TOAST, "Please set an upper and lower bound for temperature notifications");
+                    msg.setData(bundle);
+                    mHandler.sendMessage(msg);
+                }
+                else{
+                    Double lower = Double.valueOf(lowerTemp);
+                    Double upper = Double.valueOf(upperTemp);
+                    Double data = Double.valueOf(temp);
+                    sendAlerts(lower, upper, data, MAC, "Temperature");
+                }
+
             }
 
         }
-        if(lightPermission!= null){
+        if(lightPermission!= null)
+        {
             if( lightPermission.equals("yes")) {
                 String lowerLight = sharedpreferences.getString("lowerLight", null);
                 String upperLight = sharedpreferences.getString("upperLight", null);
-                Notifications(lowerLight, upperLight, light, "Light");
+                if((lowerLight == null | upperLight == null)){
+                    Message msg = mHandler.obtainMessage(Constants.MESSAGE_TOAST);
+                    Bundle bundle = new Bundle();
+                    bundle.putString(Constants.TOAST, "Please set an upper and lower bound for light notifications");
+                    msg.setData(bundle);
+                    mHandler.sendMessage(msg);
+                }else if(lowerLight.equals("") | upperLight.equals("")) {
+                    Message msg = mHandler.obtainMessage(Constants.MESSAGE_TOAST);
+                    Bundle bundle = new Bundle();
+                    bundle.putString(Constants.TOAST, "please set an upper and lower bound for light notifications");
+                    msg.setData(bundle);
+                    mHandler.sendMessage(msg);
+
+                }else{
+                    Double lower = Double.valueOf(lowerLight);
+                    Double upper = Double.valueOf(upperLight);
+                    Double data = Double.valueOf(light);
+                    sendAlerts(lower, upper, data, MAC, "Light");
+                }
             }
         }
 
 
     }
 
-
-    public void Notifications(String lower, String upper, String data, String type)
+    public void sendAlerts(Double lower, Double upper, Double data, String MAC, String type)
     {
-        float lowerBound;
-        float upperBound;
-        float sensorData = Float.valueOf(data);
-        if(lower != null){
-            lowerBound = Float.valueOf(lower);
+
+
+        if(data < lower) {
+            createNotification(Calendar.getInstance().getTimeInMillis(), lower, "below", data, MAC, type);
         }
-        if(upper != null){
-            upperBound = Float.valueOf(upper);
+        else if(data > upper){
+            createNotification(Calendar.getInstance().getTimeInMillis(), upper,"above", data, MAC, type);
         }
-
-
-        /*
-        notifications = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
-
-        if( lower != null & upper != null){
-
-            if(sensorData < lowerBound ) {
-                Notification notify = new Notification.Builder(getApplicationContext())
-                        .setSmallIcon(android.R.drawable.ic_dialog_alert)
-                        .setContentTitle("Sensor Reading Alert")
-                        .setContentText(type+" sensor reading is below "+ lower)
-                        .build();
-                notifications.notify(0, notify);
-            }
-            else if(sensorData > upperBound){
-                Notification notify = new Notification.Builder(getApplicationContext())
-                        .setSmallIcon(android.R.drawable.ic_dialog_alert)
-                        .setContentTitle("Reach: Sensor Reading Alert")
-                        .setContentText(type+" sensor reading is above "+ upper)
-                        .build();
-                notifications.notify(0, notify);
-            }
-        }
-        else if(lower == null & upper != null){
-            if(sensorData > upperBound){
-                Notification notify = new Notification.Builder(getApplicationContext())
-                        .setSmallIcon(android.R.drawable.ic_dialog_alert)
-                        .setContentTitle("Reach: Sensor Reading Alert")
-                        .setContentText(type+" sensor reading is above "+ upper)
-                        .build();
-                notifications.notify(0, notify);
-            }
-
-        }else if(lower!= null){
-
-            if(sensorData < lowerBound ) {
-                Notification notify = new Notification.Builder(getApplicationContext())
-                        .setSmallIcon(android.R.drawable.ic_dialog_alert)
-                        .setContentTitle("Reach: Sensor Reading Alert")
-                        .setContentText(type+" sensor reading is below "+ lower)
-                        .build();
-                notifications.notify(0, notify);
-            }
-        }else if(  type.equals("Motion") & sensorData == 1 )
-        {
-            Notification notify = new Notification.Builder(getApplicationContext())
-                    .setSmallIcon(android.R.drawable.ic_dialog_alert)
-                    .setContentTitle("Reach: Sensor Reading Alert")
-                    .setContentText(type+" sensor detected movement ")
-                    .build();
-            notifications.notify(0, notify);
-
-        }*/
-
-
     }
+
+    private void createNotification(long when, Double boundType, String bound, Double data, String MAC, String type)
+    {
+
+        String nodeName = database.getNodeName(MAC);
+
+        String notificationContent;
+        String notificationTitle;
+        if(!type.equals("Motion")){
+        notificationContent = type+" sensor "+ bound+" "+boundType+" at "+data;
+        notificationTitle =nodeName+" node: "+type +" sensor alert";
+        }else{
+            notificationContent = type+" sensor detects no motion";
+            notificationTitle =nodeName+" node: "+type +" sensor alert";
+        }
+
+        //large icon for notification,normally use App icon
+        Bitmap largeIcon = BitmapFactory.decodeResource(getResources(),R.drawable.ic_final);
+        int smalIcon =R.drawable.ic_final;
+        //String notificationData="This is data : "+data;
+
+		/*create intent for show notification details when user clicks notification*/
+        Intent intent =new Intent(getApplicationContext(), Bluetooth.class);
+        //intent.putExtra("Data", notificationData);
+
+		/*create unique this intent from  other intent using setData */
+        intent.setData(Uri.parse("content://"+when));
+		/*create new task for each notification with pending intent so we set Intent.FLAG_ACTIVITY_NEW_TASK */
+        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, Intent.FILL_IN_ACTION);
+
+		/*get the system service that manage notification NotificationManager*/
+        NotificationManager notificationManager =(NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+
+		/*build the notification*/
+        android.support.v4.app.NotificationCompat.Builder notificationBuilder = new android.support.v4.app.NotificationCompat.Builder(
+                getApplicationContext())
+                .setWhen(when)
+                .setContentText(notificationContent)
+                .setContentTitle(notificationTitle)
+                .setSmallIcon(smalIcon)
+                .setAutoCancel(true)
+                .setTicker(notificationTitle)
+                .setLargeIcon(largeIcon)
+                .setDefaults(Notification.DEFAULT_LIGHTS| Notification.DEFAULT_VIBRATE| Notification.DEFAULT_SOUND)
+                .setContentIntent(pendingIntent);
+
+		/*Create notification with builder*/
+        Notification notification=notificationBuilder.build();
+
+		/*sending notification to system.Here we use unique id (when)for making different each notification
+		 * if we use same id,then first notification replace by the last notification*/
+        notificationManager.notify((int) when, notification);
+    }
+
+
+
 
 
 }

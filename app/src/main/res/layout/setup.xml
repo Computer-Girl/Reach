@@ -27,14 +27,14 @@
         android:id="@+id/notifications_setup_lower"
         android:layout_width="76dp"
         android:layout_height="41dp"
-        android:inputType="number"
+        android:inputType="numberDecimal"
         android:gravity="center_horizontal"/>
 
     <EditText
         android:id="@+id/notifications_setup_upper"
         android:layout_width="76dp"
         android:layout_height="41dp"
-        android:inputType="number"
+        android:inputType="numberDecimal"
         android:gravity="center_horizontal"/>
 
     </LinearLayout>
