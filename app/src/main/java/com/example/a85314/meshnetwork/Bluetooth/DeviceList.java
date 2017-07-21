@@ -53,6 +53,11 @@ public class DeviceList extends Activity
     private ArrayAdapter<String> mNewDevicesArrayAdapter;
 
     @Override
+    public void onBackPressed() {
+
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.i(TAG,"onCreate");

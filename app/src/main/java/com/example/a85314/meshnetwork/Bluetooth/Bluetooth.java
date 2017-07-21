@@ -261,6 +261,11 @@ public class Bluetooth extends AppCompatActivity
                             netDiagram.updateData();
                             Intent serverIntent = new Intent(getApplicationContext(), DeviceList.class);
                             startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE_INSECURE);
+                            break;
+
+                        case BluetoothChatService.STATE_BLUETOOTH_OFF:
+                            onStart();
+                            break;
 
                     }
                     break;
@@ -328,6 +333,12 @@ public class Bluetooth extends AppCompatActivity
                                 }
                             })
                             .setIcon(android.R.drawable.ic_dialog_alert)
+                            .setOnCancelListener(new DialogInterface.OnCancelListener() {
+                                @Override
+                                public void onCancel(DialogInterface dialog) {
+                                    onStart();
+                                }
+                            })
                             .show();
                 }
         }
@@ -384,7 +395,6 @@ public class Bluetooth extends AppCompatActivity
                         int size = message.length;
 
                         for (int x = 5; x < size; x += 2) {
-                            // TODO: make nodes disconnected by default
                             thisNode.addNeighbor(message[x], Integer.valueOf(message[x + 1]));
 
                         }
