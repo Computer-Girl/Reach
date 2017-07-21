@@ -139,7 +139,22 @@ public class Bluetooth extends AppCompatActivity
 
         }
 
+       /** Timer pollTimer = new Timer();
+
+        pollTimer.schedule(new TimerTask()
+        {
+
+            @Override
+            public void run()
+            {
+                String readMessage = "cake 78.090890 .09090900909909 0 90 bathroom 89 ceiling 34";
+                handleData(readMessage);
+            }
+        },0,6000);**/
+
+
     }
+
 
 
 
@@ -581,18 +596,18 @@ public class Bluetooth extends AppCompatActivity
         }
 
         //large icon for notification,normally use App icon
-        Bitmap largeIcon = BitmapFactory.decodeResource(getResources(),R.drawable.ic_final);
+        Bitmap largeIcon = BitmapFactory.decodeResource(getResources(),android.R.drawable.ic_dialog_alert);
         int smalIcon =R.drawable.ic_final;
         //String notificationData="This is data : "+data;
 
 		/*create intent for show notification details when user clicks notification*/
-        Intent intent =new Intent(getApplicationContext(), Bluetooth.class);
+        //Intent intent =new Intent(getApplicationContext(), Bluetooth.class);
         //intent.putExtra("Data", notificationData);
 
 		/*create unique this intent from  other intent using setData */
-        intent.setData(Uri.parse("content://"+when));
+        //intent.setData(Uri.parse("content://"+when));
 		/*create new task for each notification with pending intent so we set Intent.FLAG_ACTIVITY_NEW_TASK */
-        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, Intent.FILL_IN_ACTION);
+        //PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, Intent.FILL_IN_ACTION);
 
 		/*get the system service that manage notification NotificationManager*/
         NotificationManager notificationManager =(NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
@@ -607,8 +622,8 @@ public class Bluetooth extends AppCompatActivity
                 .setAutoCancel(true)
                 .setTicker(notificationTitle)
                 .setLargeIcon(largeIcon)
-                .setDefaults(Notification.DEFAULT_LIGHTS| Notification.DEFAULT_VIBRATE| Notification.DEFAULT_SOUND)
-                .setContentIntent(pendingIntent);
+                .setDefaults(Notification.DEFAULT_LIGHTS| Notification.DEFAULT_VIBRATE| Notification.DEFAULT_SOUND);
+                //.setContentIntent(pendingIntent);
 
 		/*Create notification with builder*/
         Notification notification=notificationBuilder.build();
@@ -623,5 +638,3 @@ public class Bluetooth extends AppCompatActivity
 
 
 }
-
-
