@@ -354,7 +354,7 @@ public class Bluetooth extends AppCompatActivity
 
                 Log.i(TAG, "Received Bluetooth String: "+readMessage);
 
-                if (readMessage.equals("@")){
+                if (readMessage.charAt(0) == '@'){
                     return;
                 }
 
@@ -363,7 +363,7 @@ public class Bluetooth extends AppCompatActivity
                     database.updateNode(n);
                 }
 
-                if (!readMessage.equals("!")) { // '!' indicates no nodes connected
+                if (readMessage.charAt(0) != '!') { // '!' indicates no nodes connected
 
                     String[] messages = readMessage.split(";");
 

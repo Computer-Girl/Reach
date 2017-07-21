@@ -110,11 +110,16 @@ public class MeshNetDiagram extends ViewGroup {
             nodes.clear();
         }
         nodes = db.getConnectedNodes();
+        boolean selectedNodeExists = false;
         for (int i=0; i<selectedNodes.length; i++){
             if (selectedNodes[i]){
+                selectedNodeExists = true;
                 popup.setNode(nodes.get(i));
                 break;
             }
+        }
+        if (!selectedNodeExists){
+            popup.dismiss();
         }
         postInvalidate();
         Log.i("MeshNetDiagram", " updateData run");
