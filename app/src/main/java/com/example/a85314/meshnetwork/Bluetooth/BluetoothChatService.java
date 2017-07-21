@@ -71,11 +71,14 @@ public class BluetoothChatService {
      */
     private synchronized void updateUserInterfaceTitle() {
         mState = getState();
-        Log.d(TAG, "updateUserInterfaceTitle() " + mNewState + " -> " + mState);
-        mNewState = mState;
+        if (mState != mNewState){
+            Log.d(TAG, "updateUserInterfaceTitle() " + mNewState + " -> " + mState);
+            mNewState = mState;
 
-        // Give the new state to the Handler so the UI Activity can update
-        mHandler.obtainMessage(Constants.MESSAGE_STATE_CHANGE, mNewState, -1).sendToTarget();
+            // Give the new state to the Handler so the UI Activity can update
+            mHandler.obtainMessage(Constants.MESSAGE_STATE_CHANGE, mNewState, -1).sendToTarget();
+        }
+
     }
 
     /**
@@ -264,7 +267,6 @@ public class BluetoothChatService {
      * Indicate that the connection was lost and notify the UI Activity.
      */
     private void connectionLost() {
-        // TODO: allow connecting again
         // Send a failure message back to the Activity
         Message msg = mHandler.obtainMessage(Constants.MESSAGE_TOAST);
         Bundle bundle = new Bundle();
@@ -278,6 +280,7 @@ public class BluetoothChatService {
 
         // Start the service over to restart listening mode
         BluetoothChatService.this.start();
+
 
     }
 

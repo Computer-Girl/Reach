@@ -32,8 +32,6 @@ import java.util.ArrayList;
 public class Bluetooth extends AppCompatActivity
 {
 
-
-
     private NotificationManager notifications;
     public static final String MY_PREFS_NAME = "Notifications";
     SharedPreferences sharedpreferences;
@@ -127,7 +125,6 @@ public class Bluetooth extends AppCompatActivity
 
 
 
-
     /**
      * When app starts up, will run this function by default and will start the "chat"
      * service (Bluetooth connection with data management) if Bluetooth is not turned on
@@ -198,6 +195,8 @@ public class Bluetooth extends AppCompatActivity
 
         Intent serverIntent = new Intent(getApplicationContext(), DeviceList.class);
         startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE_INSECURE);
+
+
         // Creating onClickListener for scan button
 //        scan_button.setOnClickListener(new View.OnClickListener() {
 //            public void onClick(View v) {
@@ -239,6 +238,8 @@ public class Bluetooth extends AppCompatActivity
 
                         case BluetoothChatService.STATE_NONE:
 
+                            Log.i(TAG, "STATE_NONE");
+
 //                            scan_button.setVisibility(View.VISIBLE);
 //                            dbHelper.Delete();
 
@@ -249,6 +250,7 @@ public class Bluetooth extends AppCompatActivity
                             }
                             netDiagram.setHubConnected(false);
                             netDiagram.updateData();
+
                             Intent serverIntent = new Intent(getApplicationContext(), DeviceList.class);
                             startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE_INSECURE);
 
