@@ -66,6 +66,24 @@ public class NodeDatabaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
+    public String getNodeName(String MAC){
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor res = db.rawQuery("SELECT "+KEY_NAME+" FROM "+ TABLE_REMOTES+" WHERE "+KEY_MAC+" ='"+MAC+"'", null);
+
+
+        if(res.getCount() > 0 ){
+            res.moveToFirst();
+            String name = res.getString(0);
+            res.close();
+            return name;
+        }
+        else{
+            res.close();
+            return MAC;
+        }
+    }
+
     /**
      * Add a node to the database. If node already exists, equivalent to
      * <code>updateNode</code>
