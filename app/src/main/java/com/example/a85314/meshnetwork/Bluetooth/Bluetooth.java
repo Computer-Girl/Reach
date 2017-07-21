@@ -459,13 +459,13 @@ public class Bluetooth extends AppCompatActivity
             Intent intent = new Intent(Bluetooth.this, Notifications.class);
             startActivity(intent);
 
-        } else if (id == R.id.discovery) {
-
-            if (BAdapter.getScanMode() != BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE) {
-                Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-                discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
-                startActivity(discoverableIntent);
-            }
+//        } else if (id == R.id.discovery) {
+//
+//            if (BAdapter.getScanMode() != BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE) {
+//                Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
+//                discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
+//                startActivity(discoverableIntent);
+//            }
         } else if (id == R.id.bluetooth_status) {
             if (BAdapter.isEnabled()) {
                 new AlertDialog.Builder(this)

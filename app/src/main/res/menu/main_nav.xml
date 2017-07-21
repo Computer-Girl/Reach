@@ -14,10 +14,10 @@
         android:title="@string/navigation_action_notifications" />
 
 
-    <item
-        android:id="@+id/discovery"
-        android:orderInCategory="100"
-        android:title="Discoverability" />
+    <!--<item-->
+        <!--android:id="@+id/discovery"-->
+        <!--android:orderInCategory="100"-->
+        <!--android:title="Discoverability" />-->
 
 
 
