@@ -58,7 +58,8 @@ public class MeshNetDiagram extends ViewGroup {
     private Paint textPaint;
 
     private layout currentLayout;
-    private boolean[] selectedNodes;
+//    private boolean[] selectedNodes;
+    private Node selectedNode;
     private boolean hubConnected;
 
     private enum layout{
@@ -77,7 +78,8 @@ public class MeshNetDiagram extends ViewGroup {
         hubIconDisconnected = context.getResources().getDrawable(R.drawable.hub_icon_disconnected, null);
         detector = new GestureDetector(MeshNetDiagram.this.getContext(), new mListener());
         popup = new Popup(800);
-        selectedNodes = new boolean[0];
+//        selectedNodes = new boolean[0];
+        selectedNode = null;
         hubConnected = false;
         initializePaint();
         updateData();
@@ -95,10 +97,7 @@ public class MeshNetDiagram extends ViewGroup {
                 db.updateNodeName(hereNode, hereNode.getName());
             }
         }
-        if (nodeNum != db.getConnectedNodes().size()){
-            nodeNum = db.getConnectedNodes().size();
-            selectedNodes = new boolean[nodeNum];
-        }
+        nodeNum = db.getConnectedNodes().size();
         if(nodeNum <=3){
             currentLayout = layout.TRIANGLE;
         }
@@ -110,17 +109,17 @@ public class MeshNetDiagram extends ViewGroup {
             nodes.clear();
         }
         nodes = db.getConnectedNodes();
-        boolean selectedNodeExists = false;
-        for (int i=0; i<selectedNodes.length; i++){
-            if (selectedNodes[i]){
-                selectedNodeExists = true;
-                popup.setNode(nodes.get(i));
-                break;
+        if (!nodes.contains(selectedNode)){
+            selectedNode = null;
+            popup.dismiss();
+        } else{
+            for (Node n: nodes){
+                if (selectedNode.equals(n)){
+                    selectedNode = n;
+                }
             }
         }
-        if (!selectedNodeExists){
-            popup.dismiss();
-        }
+        popup.setNode(selectedNode);
         postInvalidate();
         Log.i("MeshNetDiagram", " updateData run");
     }
@@ -172,7 +171,7 @@ public class MeshNetDiagram extends ViewGroup {
                 }
             }
             for (int i = 0; i < nodeNum; i++){ //draw icons
-                if (selectedNodes[i]){
+                if (selectedNode != null && selectedNode.equals(nodes.get(i))){
                     nodeSelectedIcon.setBounds(grid.getNodeRect(i));
                     nodeSelectedIcon.draw(canvas);
                 } else {
@@ -361,7 +360,7 @@ public class MeshNetDiagram extends ViewGroup {
             popup.setOnDismissListener(new PopupWindow.OnDismissListener() {
                 @Override
                 public void onDismiss() {
-                    selectedNodes = new boolean[nodeNum];
+                    selectedNode = null;
                     invalidate();
                 }
             });
@@ -482,25 +481,29 @@ public class MeshNetDiagram extends ViewGroup {
             }
             String rssiString = "-"+Double.toString(n.getRssi())+" dBm";
             rssi.setText(rssiString.toCharArray(), 0, rssiString.length());
-            String lightString = Double.toString(1-Math.round(n.getLight()*100.0)/100.0);
+            String lightString = Integer.toString((int)((1-Math.round(n.getLight()*100.0)/100.0)*100))+"%";
             light.setText(lightString.toCharArray(), 0, lightString.length());
 
             neighborView.removeAllViews();
             for (String neighbor: n.getNeighborSet()) {
                 TextView neighborText = new TextView(getContext());
-                String name;
+                String name = null;
                 if (neighbor.equals(HUB_MAC)){
                     name = "Hub";
                 }
                 else if (nodes.contains(new Node(neighbor))){
                     name = nodes.get(nodes.indexOf(new Node(neighbor))).getName();
-                } else{
-                    name = neighbor;
                 }
-                String nString = name+"    LQI: "+n.getLQI(neighbor)+"/255";
-                neighborText.setText(nString.toCharArray(),0,nString.length());
-                neighborText.setTextColor(Color.WHITE);
-                neighborView.addView(neighborText);
+                if (name != null){
+                    String nString = name+"    LQI: "+n.getLQI(neighbor)+"/255 packets";
+                    neighborText.setText(nString.toCharArray(),0,nString.length());
+                    neighborText.setTextColor(Color.WHITE);
+                    neighborView.addView(neighborText);
+                }
+//                else{
+//                    name = neighbor;
+//                }
+
             }
         }
 
@@ -517,7 +520,7 @@ public class MeshNetDiagram extends ViewGroup {
             e.getPointerCoords(0, coords);
             for (int i = 0; i<nodeNum; i++){
                 if (grid.getNodeRect(i).contains((int) coords.x, (int) coords.y)){
-                    selectedNodes[i] = true;
+                    selectedNode = nodes.get(i);
                     postInvalidate();
                     popup.setNode(nodes.get(i));
                     popup.show();
