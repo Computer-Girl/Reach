@@ -384,6 +384,7 @@ public class MeshNetDiagram extends ViewGroup {
                         InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
                         imm.toggleSoftInput(0, 0);
                         name.setFocusableInTouchMode(false);
+                        name.setCursorVisible(false);
                         name.clearFocus();
                         n.setName(input);
                         updateData();
@@ -412,6 +413,7 @@ public class MeshNetDiagram extends ViewGroup {
                 public void onClick(View v) {
                     name.setFocusableInTouchMode(true);
                     name.requestFocus();
+                    name.setCursorVisible(true);
                     InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.showSoftInput(name, InputMethodManager.SHOW_IMPLICIT);
                 }

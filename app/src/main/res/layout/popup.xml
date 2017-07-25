@@ -32,7 +32,8 @@
             android:paddingTop="15dp"
             android:textAlignment="center"
             android:textColor="@android:color/white"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:textCursorDrawable="@null"/>
 
         <ImageButton
             android:id="@+id/editButton"
