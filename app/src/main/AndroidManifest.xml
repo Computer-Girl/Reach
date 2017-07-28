@@ -43,6 +43,7 @@
             android:name=".Bluetooth.Bluetooth"
             android:label="Network Diagram"
             android:screenOrientation="portrait"
+            android:launchMode="singleInstance"
             android:configChanges="orientation|screenSize"/>
 
         <activity
@@ -52,27 +53,13 @@
             android:label="@string/select_device"
             android:theme="@android:style/Theme.Holo.Dialog" />
 
-        <activity
-            android:name=".Notifications.NotificationsSetup"
-            android:theme="@android:style/Theme.Holo.Dialog"
-            android:label="Notifications Setup"
-            android:configChanges="orientation|screenSize"/>
 
         <activity
             android:name=".Notifications.Notifications"
             android:label="@string/navigation_action_notifications"
+            android:parentActivityName=".Bluetooth.Bluetooth"
             android:configChanges="orientation|screenSize"/>
 
-        <activity
-            android:name=".Notifications.NotificationsPermission"
-            android:theme="@android:style/Theme.Holo.Dialog"
-            android:label="Permission"
-            android:configChanges="orientation|screenSize"/>
-
-        <activity
-            android:name=".NodeData.NodeData"
-            android:label="Node Data"
-            android:configChanges="orientation|screenSize"/>
 
     </application>
 

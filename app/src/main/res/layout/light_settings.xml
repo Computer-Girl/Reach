@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/popup_background"
+    android:gravity="center_horizontal"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/closeButton_light"
+            android:layout_width="40dp"
+            android:layout_height="30dp"
+            android:background="@android:color/transparent"
+            android:paddingRight="10dp"
+            app:srcCompat="@android:drawable/ic_menu_close_clear_cancel" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:ems="10"
+            android:paddingBottom="10dp"
+            android:paddingTop="15dp"
+            android:selectAllOnFocus="true"
+            android:text="@string/light_popup_title"
+            android:textAlignment="center"
+            android:textColor="@android:color/white"
+            android:textCursorDrawable="@null"
+            android:textStyle="bold"
+            android:visibility="visible" />
+
+        <Space
+            android:layout_width="40dp"
+            android:layout_height="30dp"
+            android:background="@android:color/transparent"
+            android:paddingRight="10dp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/notify_if"
+            android:textColor="@android:color/white"
+            android:textSize="12sp" />
+
+        <Spinner
+            android:id="@+id/light_spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:entries="@array/temp_spinner_entries"
+            android:spinnerMode="dialog"
+            android:theme="@style/Theme.NoTitleBar.WhiteOnDarkSpinners" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/range"
+            android:textColor="@android:color/white"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/light_notifications_setup_lower"
+            android:layout_width="76dp"
+            android:layout_height="41dp"
+            android:backgroundTint="@android:color/white"
+            android:gravity="center_horizontal"
+            android:inputType="number"
+            android:textColor="@android:color/white"
+            android:selectAllOnFocus="true"
+            android:textCursorDrawable="@null"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/percent"
+            android:textColor="@android:color/white" />
+
+        <EditText
+            android:id="@+id/light_notifications_setup_upper"
+            android:layout_width="76dp"
+            android:layout_height="41dp"
+            android:backgroundTint="@android:color/white"
+            android:gravity="center_horizontal"
+            android:inputType="number"
+            android:textColor="@android:color/white"
+            android:selectAllOnFocus="true"
+            android:textCursorDrawable="@null"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/percent"
+            android:textColor="@android:color/white" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal"
+        android:paddingBottom="40dp">
+
+        <TextView
+            android:layout_width="76dp"
+            android:layout_height="wrap_content"
+            android:text="@string/lower"
+            android:textAlignment="center"
+            android:textColor="@android:color/white"
+            android:textSize="12sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/percent"
+            android:textColor="@android:color/white"
+            android:visibility="invisible" />
+
+        <TextView
+            android:layout_width="76dp"
+            android:layout_height="wrap_content"
+            android:text="@string/upper"
+            android:textAlignment="center"
+            android:textColor="@android:color/white"
+            android:textSize="12sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/percent"
+            android:textColor="@android:color/white"
+            android:visibility="invisible" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/light_save_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:background="@android:color/transparent"
+            android:gravity="bottom"
+            android:paddingBottom="10dp"
+            android:paddingRight="8dp"
+            android:text="@string/SAVE"
+            android:textAlignment="textEnd"
+            android:textColor="#D3D3D3"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+</LinearLayout>

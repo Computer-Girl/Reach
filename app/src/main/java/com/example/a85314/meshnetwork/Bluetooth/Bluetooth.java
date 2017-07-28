@@ -2,46 +2,27 @@ package com.example.a85314.meshnetwork.Bluetooth;
 
 import java.util.Calendar;
 
+import android.app.PendingIntent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.support.v4.app.NotificationCompat;
-import android.text.Editable;
 import android.view.Menu;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TimePicker;
 
 import android.Manifest;
-import android.app.Activity;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -50,8 +31,9 @@ import com.example.a85314.meshnetwork.R;
 import com.example.a85314.meshnetwork.Database.*;
 import com.example.a85314.meshnetwork.UI.MeshNetDiagram;
 import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 //TODO: data may not have ; make sure to check for that
 
@@ -62,6 +44,7 @@ public class Bluetooth extends AppCompatActivity
 
     private NotificationManager notifications;
     public static final String MY_PREFS_NAME = "Notifications";
+    private static final int NOTIFICATION_WAIT_TIME_MS = 14000;
     SharedPreferences sharedpreferences;
 
     private ArrayList<TextView> TextViewRef;
@@ -79,6 +62,9 @@ public class Bluetooth extends AppCompatActivity
 //    private DatabaseContract dbHelper;
     private MeshNetDiagram netDiagram;
     private NodeDatabaseHelper database;
+
+    // used to make sure user doesn't get wave of a million notifications
+    Map<String, Long> notifMap;
 
 
     /**
@@ -121,6 +107,10 @@ public class Bluetooth extends AppCompatActivity
 
         // fetching local Bluetooth adapter
         BAdapter = BluetoothAdapter.getDefaultAdapter();
+
+        sharedpreferences = getSharedPreferences(getString(R.string.preference_file_key), MODE_PRIVATE);
+
+        notifMap = new HashMap<>();
 
 
         // checking if device is Bluetooth compatible
@@ -354,6 +344,8 @@ public class Bluetooth extends AppCompatActivity
 
                 Log.i(TAG, "Received Bluetooth String: "+readMessage);
 
+                List<Node> previousConnectedNodes = database.getConnectedNodes();
+
                 if (readMessage.charAt(0) == '@'){
                     return;
                 }
@@ -401,7 +393,7 @@ public class Bluetooth extends AppCompatActivity
                         thisNode.setConnected(true);
                         database.addNode(thisNode);
 
-                        notificationsCheck(temp, motion, light, mac);
+                        sensorNotificationsCheck(Double.valueOf(temp), motion.equals("1"), Double.valueOf(light), mac);
 
 
                     }
@@ -412,6 +404,26 @@ public class Bluetooth extends AppCompatActivity
                         netDiagram.updateData();
                     }
                 });
+
+                List<Node> nowConnectedNodes = database.getConnectedNodes();
+                if(sharedpreferences.getBoolean(getString(R.string.disconnectedPermission), false)) {
+                    for (Node oldNode : previousConnectedNodes) {
+                        if (!nowConnectedNodes.contains(oldNode)) {
+                            String title = "Node Disconnected";
+                            String content = oldNode.getName() + " is now disconnected from network.";
+                            createNotification(Calendar.getInstance().getTimeInMillis(), title, content, R.drawable.ic_remove);
+                        }
+                    }
+                }
+                if(sharedpreferences.getBoolean(getString(R.string.connectedPermission), false)) {
+                    for (Node newNode : nowConnectedNodes) {
+                        if (!previousConnectedNodes.contains(newNode)) {
+                            String title = "Node Connected";
+                            String content = newNode.getName() + " is now connected to network.";
+                            createNotification(Calendar.getInstance().getTimeInMillis(), title, content, R.drawable.ic_add);
+                        }
+                    }
+                }
 
                 Log.i(TAG, "data updated");
                 }
@@ -466,31 +478,31 @@ public class Bluetooth extends AppCompatActivity
 //                discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
 //                startActivity(discoverableIntent);
 //            }
-        } else if (id == R.id.bluetooth_status) {
-            if (BAdapter.isEnabled()) {
-                new AlertDialog.Builder(this)
-                        .setTitle("Bluetooth Status")
-                        .setMessage("Bluetooth is enabled")
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        })
-                        .setIcon(android.R.drawable.ic_dialog_info)
-                        .show();
-            } else {
-                new AlertDialog.Builder(this)
-                        .setTitle("Bluetooth Status")
-                        .setMessage("Bluetooth is disabled")
-                        .setPositiveButton("enable", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                                startActivityForResult(enableIntent, 1);
-                            }
-                        })
-                        .setIcon(android.R.drawable.ic_dialog_alert)
-                        .show();
-            }
+//        } else if (id == R.id.bluetooth_status) {
+//            if (BAdapter.isEnabled()) {
+//                new AlertDialog.Builder(this)
+//                        .setTitle("Bluetooth Status")
+//                        .setMessage("Bluetooth is enabled")
+//                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+//                            public void onClick(DialogInterface dialog, int which) {
+//                                dialog.dismiss();
+//                            }
+//                        })
+//                        .setIcon(android.R.drawable.ic_dialog_info)
+//                        .show();
+//            } else {
+//                new AlertDialog.Builder(this)
+//                        .setTitle("Bluetooth Status")
+//                        .setMessage("Bluetooth is disabled")
+//                        .setPositiveButton("enable", new DialogInterface.OnClickListener() {
+//                            public void onClick(DialogInterface dialog, int which) {
+//                                Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+//                                startActivityForResult(enableIntent, 1);
+//                            }
+//                        })
+//                        .setIcon(android.R.drawable.ic_dialog_alert)
+//                        .show();
+//            }
         }
 
 
@@ -500,124 +512,116 @@ public class Bluetooth extends AppCompatActivity
 
 
 
-    public void notificationsCheck(String temp, String motion, String light, String MAC)
+    public void sensorNotificationsCheck(Double tempInC, boolean motion, Double light, String MAC)
     {
 
 
-        sharedpreferences = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
-        String motionPermission = sharedpreferences.getString("motionPermission", null);
-        String tempPermission = sharedpreferences.getString("tempPermission", null);
-        String lightPermission = sharedpreferences.getString("lightPermission", null);
 
+        boolean motionPermission = sharedpreferences.getBoolean(getString(R.string.motionPermission), false);
+        boolean tempPermission = sharedpreferences.getBoolean(getString(R.string.tempPermission), false);
+        boolean lightPermission = sharedpreferences.getBoolean(getString(R.string.lightPermission), false);
+        String content, title;
 
-        if (motionPermission != null){
-            if (motionPermission.equals("yes"))
-            {
-                if(motion.equals("0")){
-                    createNotification(Calendar.getInstance().getTimeInMillis(), 0.0, "", 0.0, MAC, "Motion");
+        if (motionPermission){
+            if (!(notifMap.containsKey(MAC+"motion") &&
+                    (Calendar.getInstance().getTimeInMillis()-notifMap.get(MAC+"motion"))<NOTIFICATION_WAIT_TIME_MS)) {
+                notifMap.put(MAC+"motion", Calendar.getInstance().getTimeInMillis());
+                // TODO: check if default value is same as default values in popups
+                if (motion && sharedpreferences.getBoolean(getString(R.string.motionWhenDetected), true)) {
+                    title = database.getNodeName(MAC) + ": motion sensor alert";
+                    content = "Motion is detected.";
+                    createNotification(Calendar.getInstance().getTimeInMillis(), title, content, R.drawable.ic_motion_sensor);
+                } else if (!motion && !sharedpreferences.getBoolean(getString(R.string.motionWhenDetected), true)) {
+                    title = database.getNodeName(MAC) + ": motion sensor alert";
+                    content = "No motion is detected.";
+                    createNotification(Calendar.getInstance().getTimeInMillis(), title, content, R.drawable.ic_motion_sensor);
                 }
             }
         }
-        //TODO: convert value of num to double
-        if (tempPermission != null){
-
-            if (tempPermission.equals("yes")) {
-                String lowerTemp = sharedpreferences.getString("lowerTemp", null);
-                String upperTemp = sharedpreferences.getString("upperTemp", null);
-                if((lowerTemp == null | upperTemp == null) ){
-                    Message msg = mHandler.obtainMessage(Constants.MESSAGE_TOAST);
-                    Bundle bundle = new Bundle();
-                    bundle.putString(Constants.TOAST, "Please set an upper and lower bound for temperature notifications");
-                    msg.setData(bundle);
-                    mHandler.sendMessage(msg);
+        if (tempPermission){
+            if (!(notifMap.containsKey(MAC+"temp") &&
+                    (Calendar.getInstance().getTimeInMillis()-notifMap.get(MAC+"temp"))<NOTIFICATION_WAIT_TIME_MS)) {
+                notifMap.put(MAC+"temp", Calendar.getInstance().getTimeInMillis());
+                double lower = (double) sharedpreferences.getFloat(getString(R.string.tempLowBound), (float) 0);
+                double upper = (double) sharedpreferences.getFloat(getString(R.string.tempHighBound), (float) 0);
+                String displayTemp;
+                tempInC = Math.round(tempInC * 10.0) / 10.0;
+                if (sharedpreferences.getBoolean(getString(R.string.fahrenheit_temp_bound), false)) {
+                    displayTemp = Double.toString(tempInC * 1.8 + 32) + " °F";
+                } else {
+                    displayTemp = Double.toString(tempInC) + " °C";
                 }
-                else if (lowerTemp.equals("") | upperTemp.equals("")){
-                    Message msg = mHandler.obtainMessage(Constants.MESSAGE_TOAST);
-                    Bundle bundle = new Bundle();
-                    bundle.putString(Constants.TOAST, "Please set an upper and lower bound for temperature notifications");
-                    msg.setData(bundle);
-                    mHandler.sendMessage(msg);
+                if (!sharedpreferences.getBoolean(getString(R.string.tempOutside), false)) {
+                    if (tempInC >= lower && tempInC <= upper) {
+                        title = database.getNodeName(MAC) + ": temperature sensor alert";
+                        content = displayTemp;
+                        createNotification(Calendar.getInstance().getTimeInMillis(), title, content, R.drawable.ic_temp_sensor);
+                    }
+                } else {
+                    if (tempInC < lower || tempInC > upper) {
+                        title = database.getNodeName(MAC) + ": temperature sensor alert";
+                        content = displayTemp;
+                        createNotification(Calendar.getInstance().getTimeInMillis(), title, content, R.drawable.ic_temp_sensor);
+                    }
                 }
-                else{
-                    Double lower = Double.valueOf(lowerTemp);
-                    Double upper = Double.valueOf(upperTemp);
-                    Double data = Double.valueOf(temp);
-                    sendAlerts(lower, upper, data, MAC, "Temperature");
-                }
-
             }
-
         }
-        if(lightPermission!= null)
+        if(lightPermission)
         {
-            if( lightPermission.equals("yes")) {
-                String lowerLight = sharedpreferences.getString("lowerLight", null);
-                String upperLight = sharedpreferences.getString("upperLight", null);
-                if((lowerLight == null | upperLight == null)){
-                    Message msg = mHandler.obtainMessage(Constants.MESSAGE_TOAST);
-                    Bundle bundle = new Bundle();
-                    bundle.putString(Constants.TOAST, "Please set an upper and lower bound for light notifications");
-                    msg.setData(bundle);
-                    mHandler.sendMessage(msg);
-                }else if(lowerLight.equals("") | upperLight.equals("")) {
-                    Message msg = mHandler.obtainMessage(Constants.MESSAGE_TOAST);
-                    Bundle bundle = new Bundle();
-                    bundle.putString(Constants.TOAST, "please set an upper and lower bound for light notifications");
-                    msg.setData(bundle);
-                    mHandler.sendMessage(msg);
-
-                }else{
-                    Double lower = Double.valueOf(lowerLight);
-                    Double upper = Double.valueOf(upperLight);
-                    Double data = Double.valueOf(light);
-                    sendAlerts(lower, upper, data, MAC, "Light");
+            if (!(notifMap.containsKey(MAC+"light") &&
+                    (Calendar.getInstance().getTimeInMillis()-notifMap.get(MAC+"light"))<NOTIFICATION_WAIT_TIME_MS)) {
+                notifMap.put(MAC+"light", Calendar.getInstance().getTimeInMillis());
+                light = 100 - Math.round(light * 100.0) / 100.0 * 100;
+                double lower = (double) sharedpreferences.getFloat(getString(R.string.lightLowBound), (float) 0);
+                double upper = (double) sharedpreferences.getFloat(getString(R.string.lightHighBound), (float) 0);
+                String displayLight = light + "%";
+                if (!sharedpreferences.getBoolean(getString(R.string.lightOutside), false)) {
+                    if (light >= lower && light <= upper) {
+                        title = database.getNodeName(MAC) + ": ambient light sensor alert";
+                        content = displayLight;
+                        createNotification(Calendar.getInstance().getTimeInMillis(), title, content, R.drawable.ic_light_sensor);
+                    }
+                } else {
+                    if (light < lower || light > upper) {
+                        title = database.getNodeName(MAC) + ": ambient light sensor alert";
+                        content = displayLight;
+                        createNotification(Calendar.getInstance().getTimeInMillis(), title, content, R.drawable.ic_light_sensor);
+                    }
                 }
             }
         }
 
-
     }
 
-    public void sendAlerts(Double lower, Double upper, Double data, String MAC, String type)
+
+    private void createNotification(long when, String title, String content, int smallIcon)
     {
 
+//        String nodeName = database.getNodeName(MAC);
 
-        if(data < lower) {
-            createNotification(Calendar.getInstance().getTimeInMillis(), lower, "below", data, MAC, type);
-        }
-        else if(data > upper){
-            createNotification(Calendar.getInstance().getTimeInMillis(), upper,"above", data, MAC, type);
-        }
-    }
-
-    private void createNotification(long when, Double boundType, String bound, Double data, String MAC, String type)
-    {
-
-        String nodeName = database.getNodeName(MAC);
-
-        String notificationContent;
-        String notificationTitle;
-        if(!type.equals("Motion")){
-        notificationContent = type+" sensor "+ bound+" "+boundType+" at "+data;
-        notificationTitle =nodeName+" node: "+type +" sensor alert";
-        }else{
-            notificationContent = type+" sensor detects no motion";
-            notificationTitle =nodeName+" node: "+type +" sensor alert";
-        }
+//        String notificationContent;
+//        String notificationTitle;
+//        if(!type.equals("Motion")){
+//        notificationContent = type+" sensor "+ bound+" "+boundType+" at "+data;
+//        notificationTitle =nodeName+" node: "+type +" sensor alert";
+//        }else{
+//            notificationContent = type+" sensor detects no motion";
+//            notificationTitle =nodeName+" node: "+type +" sensor alert";
+//        }
 
         //large icon for notification,normally use App icon
-        Bitmap largeIcon = BitmapFactory.decodeResource(getResources(),android.R.drawable.ic_dialog_alert);
-        int smalIcon =R.drawable.ic_final;
+//        Bitmap largeIcon = BitmapFactory.decodeResource(getResources(),android.R.drawable.ic_dialog_alert);
+//        int smallIcon =R.drawable.ic_final;
         //String notificationData="This is data : "+data;
 
 		/*create intent for show notification details when user clicks notification*/
-        //Intent intent =new Intent(getApplicationContext(), Bluetooth.class);
-        //intent.putExtra("Data", notificationData);
+        Intent intent =new Intent(getApplicationContext(), Bluetooth.class);
+//        intent.putExtra("Data", notificationData);
 
 		/*create unique this intent from  other intent using setData */
-        //intent.setData(Uri.parse("content://"+when));
+        intent.setData(Uri.parse("content://"+when));
 		/*create new task for each notification with pending intent so we set Intent.FLAG_ACTIVITY_NEW_TASK */
-        //PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, Intent.FILL_IN_ACTION);
+        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, Intent.FILL_IN_ACTION);
 
 		/*get the system service that manage notification NotificationManager*/
         NotificationManager notificationManager =(NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
@@ -626,14 +630,14 @@ public class Bluetooth extends AppCompatActivity
         android.support.v4.app.NotificationCompat.Builder notificationBuilder = new android.support.v4.app.NotificationCompat.Builder(
                 getApplicationContext())
                 .setWhen(when)
-                .setContentText(notificationContent)
-                .setContentTitle(notificationTitle)
-                .setSmallIcon(smalIcon)
+                .setContentText(content)
+                .setContentTitle(title)
+                .setSmallIcon(smallIcon)
                 .setAutoCancel(true)
-                .setTicker(notificationTitle)
-                .setLargeIcon(largeIcon)
-                .setDefaults(Notification.DEFAULT_LIGHTS| Notification.DEFAULT_VIBRATE| Notification.DEFAULT_SOUND);
-                //.setContentIntent(pendingIntent);
+                .setTicker(title)
+//                .setLargeIcon(largeIcon)
+                .setDefaults(Notification.DEFAULT_LIGHTS| Notification.DEFAULT_VIBRATE| Notification.DEFAULT_SOUND)
+                .setContentIntent(pendingIntent);
 
 		/*Create notification with builder*/
         Notification notification=notificationBuilder.build();

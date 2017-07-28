@@ -6,6 +6,19 @@
     <!--Shared Preferences-->
     <string name="preference_file_key">settings</string>
     <string name="convert_to_fahrenheit">f_on</string>
+    <string name="tempPermission">temp_notif</string>
+    <string name="motionPermission">motion_notif</string>
+    <string name="lightPermission">light_notif</string>
+    <string name="connectedPermission">add_notif</string>
+    <string name="disconnectedPermission">remove_notif</string>
+    <string name="tempOutside">temp_outside</string>
+    <string name="fahrenheit_temp_bound">f_notif_on</string>
+    <string name="tempLowBound">temp_low</string>
+    <string name="tempHighBound">temp_high</string>
+    <string name="lightOutside">light_outside</string>
+    <string name="lightLowBound">light_low</string>
+    <string name="lightHighBound">light_high</string>
+    <string name="motionWhenDetected">motion_is_detected</string>
 
     <!-- Bluetooth Activity -->
     <string name="Bluetooth_label">Bluetooth Setup</string>
@@ -47,9 +60,10 @@
     <string name="navigation_label_hardware">Hardware Specs</string>
     <string name="navigation_title_sensors">Sensors</string>
     <string name="navigation_label_sensor_motion">Motion</string>
-    <string name="navigation_label_sensor_gas">Gas</string>
     <string name="navigation_label_sensor_temp">Temperature</string>
     <string name="navigation_label_sensor_light">Ambient Light</string>
+    <string name="navigation_label_added">Node Connected</string>
+    <string name="navigation_label_removed">Node Disconnected</string>
     <string name="navigation_router_description">Router</string>
     <string name="navigation_node_description">Node</string>
     <string name="navigation_bluetooth_status">Bluetooth status</string>
@@ -68,19 +82,29 @@
     <string name="display2">\u0020\u0020\u0020data</string>
 
 
-    <!-- Node Data Activity -->
-    <string name="NodeData_label">Data</string>
-
-
     <!-- Notifications Create Edit Activity -->
-    <string name="notifications_create_edit_edit">Edit</string>
-    <string name="notifications_create_edit_delete">Delete</string>
-    <string name="notifications_create_edit_save">Save </string>
-    <string name="notifications_create_edit_confirm_deletion">Confirm notification deletion.</string>
-    <string name="notifications_create_edit_confirm">CONFIRM</string>
-    <string name="notifications_create_edit_cancel">Cancel</string>
-    <string name="title_activity_activity_edit">CreateOrEditActivity</string>
-    <string name="notifications_create_edit_permission">Do you want to receive notifications?</string>
+    <string name="temp_popup_title">Temperature Notifications</string>
+    <string name="notify_if">Notify if </string>
+    <string name="range"> range:</string>
+    <string name="motion_popup_title">Motion Detector Notifications</string>
+    <string name="motion_notify_if">Notify if motion </string>
+    <string name="detected"> detected.</string>
+    <string name="SAVE">SAVE</string>
+    <string name="deg_C">°C</string>
+    <string name="slash"> / </string>
+    <string name="deg_F">°F</string>
+    <string name="lower">lower</string>
+    <string name="upper">upper</string>
+    <string name="light_popup_title">Ambient Light Notifications</string>
+    <string name="percent">%</string>
+    <string-array name="temp_spinner_entries">
+        <item>within</item>
+        <item>outside</item>
+    </string-array>
+    <string-array name="motion_spinner_entries">
+        <item>is</item>
+        <item>is not</item>
+    </string-array>
 
     <!-- Network Diagram -->
     <string name="temperature">Temperature:</string>
