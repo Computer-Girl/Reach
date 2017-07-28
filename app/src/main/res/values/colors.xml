@@ -11,5 +11,8 @@
     <color name="snowflake">#93d4f2</color>
     <color name="motion_man">#cd73dd</color>
     <color name="light_bulb">#ffd000</color>
+    <color name="add">#77e871</color>
+    <color name="remove">#f96761</color>
+    <color name="popup_background">#CC000000</color>
 
 </resources>
