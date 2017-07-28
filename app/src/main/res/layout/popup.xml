@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/popup_background"
+    android:theme="@style/PopupTheme"
     android:orientation="vertical">
 
     <LinearLayout
@@ -15,7 +16,7 @@
             android:id="@+id/closeButton"
             android:layout_width="40dp"
             android:layout_height="30dp"
-            android:background="@android:color/transparent"
+            android:background="?attr/selectableItemBackgroundBorderless"
             android:paddingRight="10dp"
             app:srcCompat="@android:drawable/ic_menu_close_clear_cancel" />
 
@@ -39,7 +40,7 @@
             android:id="@+id/editButton"
             android:layout_width="40dp"
             android:layout_height="match_parent"
-            android:background="@android:color/transparent"
+            android:background="?attr/selectableItemBackgroundBorderless"
             android:paddingBottom="5dp"
             android:paddingRight="10dp"
             android:paddingTop="5dp"

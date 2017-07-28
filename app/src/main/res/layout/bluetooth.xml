@@ -1,17 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/MainLayout"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorWhite"
     >
+
     <com.example.a85314.meshnetwork.UI.MeshNetDiagram
         android:id="@+id/Net"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:padding="10dp"
-        android:layout_weight="100"
+        android:layout_height="match_parent"
         android:background="@color/colorBackground"
-        />
-</LinearLayout>
+        android:padding="10dp"
+        android:visibility="visible" />
+
+    <TextView
+        android:id="@+id/welcome_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="175dp"
+        android:text="Welcome to Reach"
+        android:textColor="@android:color/black"
+        android:textSize="30sp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:id="@+id/welcome_phrase"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/welcome_text"
+        android:layout_centerHorizontal="true"
+        android:paddingBottom="50dp"
+        android:paddingTop="8dp"
+        android:text="Tap below to connect to the Hub."
+        android:textColor="@android:color/black"
+        android:textSize="20sp" />
+
+    <Button
+        android:id="@+id/connect_button"
+        android:layout_width="150dp"
+        android:layout_height="60dp"
+        android:layout_below="@+id/welcome_phrase"
+        android:layout_centerHorizontal="true"
+        android:backgroundTint="@color/reach_blue"
+        android:elevation="1dp"
+        android:text="Connect"
+        android:textColor="@android:color/white"
+        android:textSize="18sp" />
+
+</RelativeLayout>

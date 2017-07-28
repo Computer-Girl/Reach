@@ -8,6 +8,7 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.support.v4.content.res.ResourcesCompat;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -178,7 +179,7 @@ public class MeshNetDiagram extends ViewGroup {
                     nodeIcon.setBounds(grid.getNodeRect(i));
                     nodeIcon.draw(canvas);
                 }
-                textPaint.setColor(0xFF2b9187);
+                textPaint.setColor(ResourcesCompat.getColor(getResources(), R.color.reach_blue, null));
                 canvas.drawText(nodes.get(i).getName(), grid.getNodeCenter(i).x,
                         (int) (grid.getNodeCenter(i).y+grid.nodeIconSize()*.65), textPaint);
             } //draw hub

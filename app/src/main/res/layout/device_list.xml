@@ -4,6 +4,8 @@
               android:layout_height="match_parent"
               android:orientation="vertical">
 
+    <include layout="@layout/progress_toolbar"/>
+
     <TextView
         android:id="@+id/title_paired_devices"
         android:layout_width="match_parent"
@@ -45,10 +47,10 @@
         android:stackFromBottom="true"
         />
 
-    <Button
-        android:id="@+id/button_scan"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/button_scan"
-        />
+    <!--<Button-->
+        <!--android:id="@+id/button_scan"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="@string/button_scan"-->
+        <!--/>-->
 </LinearLayout>

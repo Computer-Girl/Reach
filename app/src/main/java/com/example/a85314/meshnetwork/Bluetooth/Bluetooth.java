@@ -24,6 +24,8 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.example.a85314.meshnetwork.Notifications.Notifications;
@@ -60,6 +62,8 @@ public class Bluetooth extends AppCompatActivity
     // Layout Views
 //    private Button scan_button;
 //    private DatabaseContract dbHelper;
+    private TextView welcomeTitle, welcomePhrase;
+    private Button connectButton;
     private MeshNetDiagram netDiagram;
     private NodeDatabaseHelper database;
 
@@ -102,8 +106,21 @@ public class Bluetooth extends AppCompatActivity
         // initializing Database helper object
         database = new NodeDatabaseHelper(context);
 
+        welcomeTitle = (TextView) findViewById(R.id.welcome_text);
+        welcomePhrase = (TextView) findViewById(R.id.welcome_phrase);
+        connectButton = (Button) findViewById(R.id.connect_button);
+        connectButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setupChat();
+            }
+        });
+
         netDiagram = (MeshNetDiagram) findViewById(R.id.Net);
+        showWelcome();
+        netDiagram.setVisibility(View.INVISIBLE);
         netDiagram.setHubConnected(false);
+
 
         // fetching local Bluetooth adapter
         BAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -161,9 +178,10 @@ public class Bluetooth extends AppCompatActivity
         if (!BAdapter.isEnabled()) {
             Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
+            showWelcome();
             // Otherwise, setup the chat session
         } else if (mChatService == null) {
-            setupChat();
+            showWelcome();
         }
     }
 
@@ -219,6 +237,18 @@ public class Bluetooth extends AppCompatActivity
 
     }
 
+    private void showWelcome(){
+        welcomeTitle.setVisibility(View.VISIBLE);
+        welcomePhrase.setVisibility(View.VISIBLE);
+        connectButton.setVisibility(View.VISIBLE);
+    }
+
+    private void hideWelcome(){
+        welcomeTitle.setVisibility(View.INVISIBLE);
+        welcomePhrase.setVisibility(View.INVISIBLE);
+        connectButton.setVisibility(View.INVISIBLE);
+    }
+
 
     /**
      * Handler that receives messages the from BluetoothChatService thread, lets the application
@@ -235,7 +265,9 @@ public class Bluetooth extends AppCompatActivity
                     {
                         case BluetoothChatService.STATE_CONNECTED:
                             Toast.makeText(getApplicationContext(), "Connected to " + mConnectedDeviceName, Toast.LENGTH_SHORT).show();
+                            hideWelcome();
                             netDiagram.setHubConnected(true);
+                            netDiagram.setVisibility(View.VISIBLE);
                             netDiagram.updateData();
 
                             break;
@@ -247,13 +279,16 @@ public class Bluetooth extends AppCompatActivity
                                 n.setConnected(false);
                                 database.updateNode(n);
                             }
+                            showWelcome();
                             netDiagram.setHubConnected(false);
+                            netDiagram.setVisibility(View.INVISIBLE);
                             netDiagram.updateData();
                             Intent serverIntent = new Intent(getApplicationContext(), DeviceList.class);
                             startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE_INSECURE);
                             break;
 
                         case BluetoothChatService.STATE_BLUETOOTH_OFF:
+                            netDiagram.setVisibility(View.INVISIBLE);
                             onStart();
                             break;
 
@@ -306,7 +341,7 @@ public class Bluetooth extends AppCompatActivity
                 if (resultCode == Activity.RESULT_OK)
                 {
                     /**Bluetooth is enabled, can set up the chat service **/
-                    setupChat();
+                    showWelcome();
                 }
                 else
                 {
@@ -593,6 +628,10 @@ public class Bluetooth extends AppCompatActivity
 
     }
 
+    @Override
+    public void onBackPressed() {
+        
+    }
 
     private void createNotification(long when, String title, String content, int smallIcon)
     {

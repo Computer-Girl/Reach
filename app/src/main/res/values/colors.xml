@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3CB371</color>
+
     <color name="colorPrimaryDark">#000000</color>
     <color name="colorWhite">#FFFFFF</color>
     <color name="colorBackground">#FFFFFF</color>
@@ -14,5 +14,7 @@
     <color name="add">#77e871</color>
     <color name="remove">#f96761</color>
     <color name="popup_background">#CC000000</color>
+    <color name="reach_blue">#FF6a98ff</color>
+    <color name="reach_blue_lite">#ffafc8ff</color>
 
 </resources>

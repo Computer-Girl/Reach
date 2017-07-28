@@ -5,6 +5,7 @@
     android:layout_height="match_parent"
     android:background="@color/popup_background"
     android:gravity="center_horizontal"
+    android:theme="@style/PopupTheme"
     android:orientation="vertical">
 
     <LinearLayout
@@ -16,7 +17,7 @@
             android:id="@+id/closeButton_motion"
             android:layout_width="40dp"
             android:layout_height="30dp"
-            android:background="@android:color/transparent"
+            android:background="?attr/selectableItemBackgroundBorderless"
             android:paddingRight="10dp"
             app:srcCompat="@android:drawable/ic_menu_close_clear_cancel" />
 
@@ -91,7 +92,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
-            android:background="@android:color/transparent"
+            android:background="?attr/selectableItemBackgroundBorderless"
             android:gravity="bottom"
             android:paddingBottom="10dp"
             android:paddingRight="8dp"
