@@ -43,7 +43,7 @@
             android:name=".Bluetooth.Bluetooth"
             android:label="Network Diagram"
             android:screenOrientation="portrait"
-            android:launchMode="singleInstance"
+            android:launchMode="singleTask"
             android:configChanges="orientation|screenSize"/>
 
         <activity

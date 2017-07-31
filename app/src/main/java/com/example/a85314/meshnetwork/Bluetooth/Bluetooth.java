@@ -283,8 +283,8 @@ public class Bluetooth extends AppCompatActivity
                             netDiagram.setHubConnected(false);
                             netDiagram.setVisibility(View.INVISIBLE);
                             netDiagram.updateData();
-                            Intent serverIntent = new Intent(getApplicationContext(), DeviceList.class);
-                            startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE_INSECURE);
+//                            Intent serverIntent = new Intent(getApplicationContext(), DeviceList.class);
+//                            startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE_INSECURE);
                             break;
 
                         case BluetoothChatService.STATE_BLUETOOTH_OFF:
