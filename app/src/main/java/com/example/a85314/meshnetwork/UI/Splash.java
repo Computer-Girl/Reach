@@ -4,11 +4,8 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import com.example.a85314.meshnetwork.Bluetooth.Bluetooth;
+import com.example.a85314.meshnetwork.R;
 
-
-/**
- * Created by a85314 on 5/23/2017.
- */
 
 public class Splash extends AppCompatActivity
 {
