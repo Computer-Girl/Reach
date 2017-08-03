@@ -47,6 +47,7 @@ public class Bluetooth extends AppCompatActivity
     private NotificationManager notifications;
     public static final String MY_PREFS_NAME = "Notifications";
     private static final int NOTIFICATION_WAIT_TIME_MS = 14000;
+    private static final int BATTERY_NOTIFICATION_WAIT_TIME_MS = 4*60*1000;
     SharedPreferences sharedpreferences;
 
     private ArrayList<TextView> TextViewRef;
@@ -419,16 +420,20 @@ public class Bluetooth extends AppCompatActivity
                         String RSSI = message[4];
                         thisNode.setRssi(Double.valueOf(RSSI));
 
+                        String battery = message[5];
+                        // Swap value because 0 signal mean low battery
+                        thisNode.setBatteryLow(!battery.equals("1"));
+
                         int size = message.length;
 
-                        for (int x = 5; x < size; x += 2) {
+                        for (int x = 6; x < size; x += 2) {
                             thisNode.addNeighbor(message[x], Integer.valueOf(message[x + 1]));
 
                         }
                         thisNode.setConnected(true);
                         database.addNode(thisNode);
 
-                        sensorNotificationsCheck(Double.valueOf(temp), motion.equals("1"), Double.valueOf(light), mac);
+                        sensorNotificationsCheck(thisNode);
 
 
                     }
@@ -547,7 +552,7 @@ public class Bluetooth extends AppCompatActivity
 
 
 
-    public void sensorNotificationsCheck(Double tempInC, boolean motion, Double light, String MAC)
+    public void sensorNotificationsCheck(Node node)
     {
 
 
@@ -555,32 +560,33 @@ public class Bluetooth extends AppCompatActivity
         boolean motionPermission = sharedpreferences.getBoolean(getString(R.string.motionPermission), false);
         boolean tempPermission = sharedpreferences.getBoolean(getString(R.string.tempPermission), false);
         boolean lightPermission = sharedpreferences.getBoolean(getString(R.string.lightPermission), false);
+        boolean batteryPermission = sharedpreferences.getBoolean(getString(R.string.batteryPermission), false);
         String content, title;
 
         if (motionPermission){
-            if (!(notifMap.containsKey(MAC+"motion") &&
-                    (Calendar.getInstance().getTimeInMillis()-notifMap.get(MAC+"motion"))<NOTIFICATION_WAIT_TIME_MS)) {
-                notifMap.put(MAC+"motion", Calendar.getInstance().getTimeInMillis());
+            if (!(notifMap.containsKey(node.getMac()+"motion") &&
+                    (Calendar.getInstance().getTimeInMillis()-notifMap.get(node.getMac()+"motion"))<NOTIFICATION_WAIT_TIME_MS)) {
+                notifMap.put(node.getMac()+"motion", Calendar.getInstance().getTimeInMillis());
                 // TODO: check if default value is same as default values in popups
-                if (motion && sharedpreferences.getBoolean(getString(R.string.motionWhenDetected), true)) {
-                    title = database.getNodeName(MAC) + ": motion sensor alert";
+                if (node.isMotion() && sharedpreferences.getBoolean(getString(R.string.motionWhenDetected), true)) {
+                    title = database.getNodeName(node.getMac()) + ": motion sensor alert";
                     content = "Motion is detected.";
                     createNotification(Calendar.getInstance().getTimeInMillis(), title, content, R.drawable.ic_motion_sensor);
-                } else if (!motion && !sharedpreferences.getBoolean(getString(R.string.motionWhenDetected), true)) {
-                    title = database.getNodeName(MAC) + ": motion sensor alert";
+                } else if (!node.isMotion() && !sharedpreferences.getBoolean(getString(R.string.motionWhenDetected), true)) {
+                    title = database.getNodeName(node.getMac()) + ": motion sensor alert";
                     content = "No motion is detected.";
                     createNotification(Calendar.getInstance().getTimeInMillis(), title, content, R.drawable.ic_motion_sensor);
                 }
             }
         }
         if (tempPermission){
-            if (!(notifMap.containsKey(MAC+"temp") &&
-                    (Calendar.getInstance().getTimeInMillis()-notifMap.get(MAC+"temp"))<NOTIFICATION_WAIT_TIME_MS)) {
-                notifMap.put(MAC+"temp", Calendar.getInstance().getTimeInMillis());
+            if (!(notifMap.containsKey(node.getMac()+"temp") &&
+                    (Calendar.getInstance().getTimeInMillis()-notifMap.get(node.getMac()+"temp"))<NOTIFICATION_WAIT_TIME_MS)) {
+                notifMap.put(node.getMac()+"temp", Calendar.getInstance().getTimeInMillis());
                 double lower = (double) sharedpreferences.getFloat(getString(R.string.tempLowBound), (float) 0);
                 double upper = (double) sharedpreferences.getFloat(getString(R.string.tempHighBound), (float) 0);
                 String displayTemp;
-                tempInC = Math.round(tempInC * 10.0) / 10.0;
+                double tempInC = Math.round(node.getTemp() * 10.0) / 10.0;
                 if (sharedpreferences.getBoolean(getString(R.string.fahrenheit_temp_bound), false)) {
                     displayTemp = Double.toString(tempInC * 1.8 + 32) + " °F";
                 } else {
@@ -588,13 +594,13 @@ public class Bluetooth extends AppCompatActivity
                 }
                 if (!sharedpreferences.getBoolean(getString(R.string.tempOutside), false)) {
                     if (tempInC >= lower && tempInC <= upper) {
-                        title = database.getNodeName(MAC) + ": temperature sensor alert";
+                        title = database.getNodeName(node.getMac()) + ": temperature sensor alert";
                         content = displayTemp;
                         createNotification(Calendar.getInstance().getTimeInMillis(), title, content, R.drawable.ic_temp_sensor);
                     }
                 } else {
                     if (tempInC < lower || tempInC > upper) {
-                        title = database.getNodeName(MAC) + ": temperature sensor alert";
+                        title = database.getNodeName(node.getMac()) + ": temperature sensor alert";
                         content = displayTemp;
                         createNotification(Calendar.getInstance().getTimeInMillis(), title, content, R.drawable.ic_temp_sensor);
                     }
@@ -603,25 +609,37 @@ public class Bluetooth extends AppCompatActivity
         }
         if(lightPermission)
         {
-            if (!(notifMap.containsKey(MAC+"light") &&
-                    (Calendar.getInstance().getTimeInMillis()-notifMap.get(MAC+"light"))<NOTIFICATION_WAIT_TIME_MS)) {
-                notifMap.put(MAC+"light", Calendar.getInstance().getTimeInMillis());
-                light = 100 - Math.round(light * 100.0) / 100.0 * 100;
+            if (!(notifMap.containsKey(node.getMac()+"light") &&
+                    (Calendar.getInstance().getTimeInMillis()-notifMap.get(node.getMac()+"light"))<NOTIFICATION_WAIT_TIME_MS)) {
+                notifMap.put(node.getMac()+"light", Calendar.getInstance().getTimeInMillis());
+                double light = 100 - Math.round(node.getLight() * 100.0) / 100.0 * 100;
                 double lower = (double) sharedpreferences.getFloat(getString(R.string.lightLowBound), (float) 0);
                 double upper = (double) sharedpreferences.getFloat(getString(R.string.lightHighBound), (float) 0);
                 String displayLight = light + "%";
                 if (!sharedpreferences.getBoolean(getString(R.string.lightOutside), false)) {
                     if (light >= lower && light <= upper) {
-                        title = database.getNodeName(MAC) + ": ambient light sensor alert";
+                        title = database.getNodeName(node.getMac()) + ": ambient light sensor alert";
                         content = displayLight;
                         createNotification(Calendar.getInstance().getTimeInMillis(), title, content, R.drawable.ic_light_sensor);
                     }
                 } else {
                     if (light < lower || light > upper) {
-                        title = database.getNodeName(MAC) + ": ambient light sensor alert";
+                        title = database.getNodeName(node.getMac()) + ": ambient light sensor alert";
                         content = displayLight;
                         createNotification(Calendar.getInstance().getTimeInMillis(), title, content, R.drawable.ic_light_sensor);
                     }
+                }
+            }
+        }
+
+        if (batteryPermission){
+            if (!(notifMap.containsKey(node.getMac()+"battery") &&
+                    (Calendar.getInstance().getTimeInMillis()-notifMap.get(node.getMac()+"battery"))<BATTERY_NOTIFICATION_WAIT_TIME_MS)) {
+                notifMap.put(node.getMac()+"battery", Calendar.getInstance().getTimeInMillis());
+                if (node.isBatteryLow()) {
+                    title = database.getNodeName(node.getMac()) + ": battery low";
+                    content = "Charge node battery.";
+                    createNotification(Calendar.getInstance().getTimeInMillis(), title, content, R.drawable.ic_battery);
                 }
             }
         }

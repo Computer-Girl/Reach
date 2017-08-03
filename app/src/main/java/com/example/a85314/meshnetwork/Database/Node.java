@@ -10,7 +10,7 @@ import java.util.Set;
 public class Node {
     private String mac, name;
     private double temp, light, rssi;
-    private boolean motion, connected;
+    private boolean motion, batteryLow, connected;
     private Map<String, Integer> neighborMACtoLQI;
 
     /**
@@ -61,6 +61,14 @@ public class Node {
 
     public boolean isMotion() {
         return motion;
+    }
+
+    public boolean isBatteryLow() {
+        return batteryLow;
+    }
+
+    public void setBatteryLow(boolean batteryLow) {
+        this.batteryLow = batteryLow;
     }
 
     public void setMotion(boolean motion) {

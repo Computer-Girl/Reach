@@ -11,6 +11,7 @@
     <string name="lightPermission">light_notif</string>
     <string name="connectedPermission">add_notif</string>
     <string name="disconnectedPermission">remove_notif</string>
+    <string name="batteryPermission">batt_notif</string>
     <string name="tempOutside">temp_outside</string>
     <string name="fahrenheit_temp_bound">f_notif_on</string>
     <string name="tempLowBound">temp_low</string>
@@ -111,6 +112,7 @@
     <string name="motion">Motion:</string>
     <string name="ambient_light">Ambient Light:</string>
     <string name="neighboring_nodes">Neighboring Nodes:</string>
+    <string name="low_batt">Low Battery!</string>
 
 </resources>
 
