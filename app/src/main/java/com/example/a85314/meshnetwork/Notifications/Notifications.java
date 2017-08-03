@@ -28,7 +28,8 @@ public class Notifications extends AppCompatActivity
 {
 
     ImageButton tempGear, motionGear, lightGear;
-    Switch tempSwitch, motionSwitch, lightSwitch, connectedSwitch, disconnectedSwitch;
+    Switch tempSwitch, motionSwitch, lightSwitch, connectedSwitch,
+            disconnectedSwitch, batterySwitch;
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor sharedPreferencesEditor;
 
@@ -133,11 +134,26 @@ public class Notifications extends AppCompatActivity
                 }
             }
         });
+        batterySwitch = (Switch) findViewById(R.id.battery_switch);
+        batterySwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    sharedPreferencesEditor.putBoolean(getString(R.string.batteryPermission), true);
+                    sharedPreferencesEditor.apply();
+                } else {
+                    sharedPreferencesEditor.putBoolean(getString(R.string.batteryPermission), false);
+                    sharedPreferencesEditor.apply();
+                }
+            }
+        });
+
         tempSwitch.setChecked(sharedPreferences.getBoolean(getString(R.string.tempPermission), false));
         motionSwitch.setChecked(sharedPreferences.getBoolean(getString(R.string.motionPermission), false));
         lightSwitch.setChecked(sharedPreferences.getBoolean(getString(R.string.lightPermission), false));
         connectedSwitch.setChecked(sharedPreferences.getBoolean(getString(R.string.connectedPermission), false));
         disconnectedSwitch.setChecked(sharedPreferences.getBoolean(getString(R.string.disconnectedPermission), false));
+        batterySwitch.setChecked(sharedPreferences.getBoolean(getString(R.string.batteryPermission), false));
     }
 
 

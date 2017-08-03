@@ -321,6 +321,7 @@ public class MeshNetDiagram extends ViewGroup {
         private Node n;
         private PopupWindow popup;
         private View parentView;
+        private LinearLayout lowBatteryView;
         private EditText name;
         private TextView rssi;
         private TextView temp;
@@ -365,6 +366,7 @@ public class MeshNetDiagram extends ViewGroup {
                     invalidate();
                 }
             });
+            lowBatteryView = (LinearLayout) viewGroup.findViewById(R.id.low_batt_view);
             name = (EditText) viewGroup.findViewById(R.id.nameEditText);
             name.setFocusable(false);
             name.setOnFocusChangeListener(new OnFocusChangeListener() {
@@ -457,6 +459,13 @@ public class MeshNetDiagram extends ViewGroup {
                             Context.MODE_PRIVATE);
             if (n == null){
                 return;
+            }
+            if (n.isBatteryLow()){
+                Log.i("Popup", "Thinks battery is low.");
+                lowBatteryView.setVisibility(VISIBLE);
+            } else{
+                Log.i("Popup", "Thinks battery is NOT low.");
+                lowBatteryView.setVisibility(GONE);
             }
             String nameString = n.getName();
             if (!name.isFocused()) {

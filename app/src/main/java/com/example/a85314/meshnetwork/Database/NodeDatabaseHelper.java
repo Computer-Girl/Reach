@@ -28,6 +28,7 @@ public class NodeDatabaseHelper extends SQLiteOpenHelper {
     private static final String KEY_MOTION = "motion";
     private static final String KEY_LIGHT = "light";
     private static final String KEY_RSSI = "rssi";
+    private static final String KEY_BATTERY_LOW = "batt";
     private static final String KEY_NUM_NEIGHBORS = "numNeighbors";
     private static final String KEY_N_MACS = "neighborMacs";
     private static final String KEY_N_LQI = "neighborLqi";
@@ -51,6 +52,7 @@ public class NodeDatabaseHelper extends SQLiteOpenHelper {
                 + KEY_MAC + " TEXT PRIMARY KEY," + KEY_NAME + " TEXT,"
                 + KEY_TEMP + " REAL," + KEY_MOTION + " INTEGER,"
                 + KEY_LIGHT + " REAL," + KEY_RSSI + " REAL,"
+                + KEY_BATTERY_LOW + " INTEGER,"
                 + KEY_NUM_NEIGHBORS + " INTEGER," + KEY_N_MACS + " TEXT,"
                 + KEY_N_LQI + " TEXT," + KEY_CONNECTED + " INTEGER" + ")";
         db.execSQL(CREATE_NODES_TABLE);
@@ -116,7 +118,7 @@ public class NodeDatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.query(TABLE_REMOTES, new String[]{KEY_MAC,
-                        KEY_NAME, KEY_TEMP, KEY_MOTION, KEY_LIGHT, KEY_RSSI,
+                        KEY_NAME, KEY_TEMP, KEY_MOTION, KEY_LIGHT, KEY_RSSI, KEY_BATTERY_LOW,
                         KEY_NUM_NEIGHBORS, KEY_N_MACS, KEY_N_LQI, KEY_CONNECTED}, KEY_MAC + "=?",
                 new String[]{mac}, null, null, null, null);
         if (cursor != null) {
@@ -128,12 +130,13 @@ public class NodeDatabaseHelper extends SQLiteOpenHelper {
             node.setMotion(cursor.getString(3).equals("1"));
             node.setLight(Double.valueOf(cursor.getString(4)));
             node.setRssi(Double.valueOf(cursor.getString(5)));
-            String[] neighbors = cursor.getString(7).split(" ");
-            String[] lqis = cursor.getString(8).split(" ");
-            for (int i = 0; i < Integer.valueOf(cursor.getString(6)); i++) {
+            node.setBatteryLow(cursor.getString(6).equals("1"));
+            String[] neighbors = cursor.getString(8).split(" ");
+            String[] lqis = cursor.getString(9).split(" ");
+            for (int i = 0; i < Integer.valueOf(cursor.getString(7)); i++) {
                 node.addNeighbor(neighbors[i], Integer.valueOf(lqis[i]));
             }
-            node.setConnected(cursor.getString(9).equals("1"));
+            node.setConnected(cursor.getString(10).equals("1"));
             cursor.close();
             return node;
         }
@@ -247,6 +250,7 @@ public class NodeDatabaseHelper extends SQLiteOpenHelper {
         values.put(KEY_MOTION, node.isMotion());
         values.put(KEY_LIGHT, node.getLight());
         values.put(KEY_RSSI, node.getRssi());
+        values.put(KEY_BATTERY_LOW, node.isBatteryLow());
         values.put(KEY_NUM_NEIGHBORS, node.getNeighborSet().size());
         String n_macs = "";
         for (String n : node.getNeighborSet()) {
