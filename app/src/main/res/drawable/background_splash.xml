@@ -5,7 +5,7 @@
         android:drawable="@color/colorWhite"/>
 
     <item
-        android:gravity="center"
+        android:gravity="fill_horizontal"
         android:drawable="@drawable/splash"/>
 
 </layer-list>
