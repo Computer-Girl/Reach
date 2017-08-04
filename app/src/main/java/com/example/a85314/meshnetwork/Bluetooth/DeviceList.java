@@ -112,16 +112,16 @@ public class DeviceList extends Activity
         Set<BluetoothDevice> pairedDevices = mBtAdapter.getBondedDevices();
 
         // If there are paired devices, add each one to the ArrayAdapter
-        if (pairedDevices.size() > 0) {
-            pairedListView.setOnItemClickListener(mDeviceClickListener);
-            findViewById(R.id.title_paired_devices).setVisibility(View.VISIBLE);
-            for (BluetoothDevice device : pairedDevices) {
-                pairedDevicesArrayAdapter.add(device.getName() + "\n" + device.getAddress());
-            }
-        } else {
-//            String noDevices = getResources().getText(R.string.none_paired).toString();
-//            pairedDevicesArrayAdapter.add(noDevices);
-        }
+//        if (pairedDevices.size() > 0) {
+//            pairedListView.setOnItemClickListener(mDeviceClickListener);
+////            findViewById(R.id.title_paired_devices).setVisibility(View.VISIBLE);
+//            for (BluetoothDevice device : pairedDevices) {
+//                pairedDevicesArrayAdapter.add(device.getName() + "\n" + device.getAddress());
+//            }
+//        } else {
+////            String noDevices = getResources().getText(R.string.none_paired).toString();
+////            pairedDevicesArrayAdapter.add(noDevices);
+//        }
         doDiscovery();
     }
 

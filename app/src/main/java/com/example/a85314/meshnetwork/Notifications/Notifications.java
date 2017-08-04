@@ -2,11 +2,13 @@ package com.example.a85314.meshnetwork.Notifications;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Point;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -32,6 +34,7 @@ public class Notifications extends AppCompatActivity
             disconnectedSwitch, batterySwitch;
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor sharedPreferencesEditor;
+    int popupSize;
 
 
     @Override
@@ -46,26 +49,31 @@ public class Notifications extends AppCompatActivity
                         Context.MODE_PRIVATE);
         sharedPreferencesEditor = sharedPreferences.edit();
 
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        popupSize = (int) (size.x *.7);
+
         // TODO: Add onClick Listeners here
         tempGear = (ImageButton) findViewById(R.id.temp_gear);
         tempGear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new TempPopup(400).show();
+                new TempPopup(popupSize).show();
             }
         });
         motionGear = (ImageButton) findViewById(R.id.motion_gear);
         motionGear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new MotionPopup(400).show();
+                new MotionPopup(popupSize).show();
             }
         });
         lightGear = (ImageButton) findViewById(R.id.light_gear);
         lightGear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new LightPopup(400).show();
+                new LightPopup(popupSize).show();
             }
         });
 
@@ -168,6 +176,11 @@ public class Notifications extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onBackPressed() {
+        NavUtils.navigateUpFromSameTask(this);
+    }
+
     private class TempPopup{
         PopupWindow popup;
         ImageButton closeButton;
@@ -268,7 +281,7 @@ public class Notifications extends AppCompatActivity
             String upperBound = Float.toString(sharedPreferences.getFloat(getString(R.string.tempHighBound), 10));
             upperEditText.setText(upperBound.toCharArray(), 0, upperBound.length());
             updateCF();
-            if (sharedPreferences.getBoolean(getString(R.string.tempOutside), false)){
+            if (sharedPreferences.getBoolean(getString(R.string.tempOutside), true)){
                 spinner.setSelection(1);
             } else {
                 spinner.setSelection(0);
@@ -343,7 +356,7 @@ public class Notifications extends AppCompatActivity
             lowerEditText.setText(lowerBound.toCharArray(), 0 , lowerBound.length());
             String upperBound = Float.toString(sharedPreferences.getFloat(getString(R.string.lightHighBound), 10));
             upperEditText.setText(upperBound.toCharArray(), 0, upperBound.length());
-            if (sharedPreferences.getBoolean(getString(R.string.lightOutside), false)){
+            if (sharedPreferences.getBoolean(getString(R.string.lightOutside), true)){
                 spinner.setSelection(1);
             } else {
                 spinner.setSelection(0);

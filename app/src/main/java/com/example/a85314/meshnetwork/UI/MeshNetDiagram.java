@@ -157,7 +157,7 @@ public class MeshNetDiagram extends ViewGroup {
             for (int i = 0; i < nodeNum; i++){ //draw lines
                 thisLQI = nodes.get(i).getLQI(HUB_MAC);
                 if (thisLQI != 0){
-                    linePaint.setStrokeWidth(thisLQI/10);
+                    linePaint.setStrokeWidth(thisLQI-230);
                     canvas.drawLine(grid.getHubCenter().x, grid.getHubCenter().y,
                             grid.getNodeCenter(i).x, grid.getNodeCenter(i).y, linePaint);
                 }
@@ -165,7 +165,7 @@ public class MeshNetDiagram extends ViewGroup {
                 for (int j = 0; j < nodeNum; j++){
                     thisLQI = nodes.get(i).getLQI(nodes.get(j).getMac());
                     if (thisLQI !=0) {
-                        linePaint.setStrokeWidth(thisLQI / 10);
+                        linePaint.setStrokeWidth(thisLQI-230);
                         canvas.drawLine(grid.getNodeCenter(i).x, grid.getNodeCenter(i).y,
                                 grid.getNodeCenter(j).x, grid.getNodeCenter(j).y, linePaint);
                     }

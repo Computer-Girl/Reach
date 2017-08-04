@@ -52,7 +52,6 @@ public class BluetoothChatService {
     public static final int STATE_LISTEN = 1;     // now listening for incoming connections
     public static final int STATE_CONNECTING = 2; // now initiating an outgoing connection
     public static final int STATE_CONNECTED = 3;  // now connected to a remote device
-    // TODO: Added
     public static final int STATE_BLUETOOTH_OFF = 4; // Bluetooth has been disabled
 
     /**
@@ -322,6 +321,14 @@ public class BluetoothChatService {
         }
 
         public void run() {
+            //TODO: check if this works
+            if (!mAdapter.isEnabled()){
+                cancel();
+                mState = STATE_BLUETOOTH_OFF;
+                updateUserInterfaceTitle();
+                return;
+            }
+
             Log.d(TAG, "Socket Type: " + mSocketType +
                     "BEGIN mAcceptThread" + this);
             setName("AcceptThread" + mSocketType);

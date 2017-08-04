@@ -3,6 +3,9 @@ package com.example.a85314.meshnetwork.Bluetooth;
 import java.util.Calendar;
 
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Activity;
@@ -10,6 +13,7 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.view.Menu;
 
 import android.Manifest;
@@ -83,6 +87,8 @@ public class Bluetooth extends AppCompatActivity
      */
     private BluetoothAdapter BAdapter = null;
 
+    private BroadcastReceiver mReceiver;
+
     /**
      * Member object for the chat services
      */
@@ -102,8 +108,6 @@ public class Bluetooth extends AppCompatActivity
         setContentView(R.layout.bluetooth);
         context = getApplicationContext();
 
-        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 2);
-
         // initializing Database helper object
         database = new NodeDatabaseHelper(context);
 
@@ -113,7 +117,38 @@ public class Bluetooth extends AppCompatActivity
         connectButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setupChat();
+                if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION)
+                    == PackageManager.PERMISSION_DENIED){
+                    new AlertDialog.Builder(Bluetooth.this)
+                            .setTitle("Location Permission Needed")
+                            .setMessage("Please allow location permission for Bluetooth " +
+                                    "device discovery.")
+                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    ActivityCompat.requestPermissions(Bluetooth.this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 2);
+                                    dialog.dismiss();
+                                }
+                            })
+                            .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            })
+                            .setIcon(android.R.drawable.ic_dialog_alert)
+                            .show();
+                }
+                else if (!BAdapter.isEnabled()){
+                    Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                    startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
+
+                }
+                else if (BAdapter.isEnabled() &&
+                        ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION)
+                        == PackageManager.PERMISSION_GRANTED){
+                    setupChat();
+                }
             }
         });
 
@@ -135,8 +170,8 @@ public class Bluetooth extends AppCompatActivity
         if (BAdapter == null) {
 
             new AlertDialog.Builder(this)
-                    .setTitle("Error: Not compatible")
-                    .setMessage("Your phone does not support Bluetooth")
+                    .setTitle("Reach Is Not Compatible With Your Device")
+                    .setMessage("Your phone does not support Bluetooth.")
                     .setPositiveButton("Exit", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             System.exit(0);
@@ -147,44 +182,18 @@ public class Bluetooth extends AppCompatActivity
 
         }
 
-       /** Timer pollTimer = new Timer();
-
-        pollTimer.schedule(new TimerTask()
-        {
-
-            @Override
-            public void run()
-            {
-                String readMessage = "cake 78.090890 .09090900909909 0 90 bathroom 89 ceiling 34";
-                handleData(readMessage);
-            }
-        },0,6000);**/
-
-
     }
 
 
-
-
-    /**
-     * When app starts up, will run this function by default and will start the "chat"
-     * service (Bluetooth connection with data management) if Bluetooth is not turned on
-     * user will receive a request message to enable it
-     */
     @Override
-    public void onStart() {
-        super.onStart();
-        // If BT is not on, request that it be enabled.
-        // setupChat() will then be called during onActivityResult
-        if (!BAdapter.isEnabled()) {
-            Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
-            showWelcome();
-            // Otherwise, setup the chat session
-        } else if (mChatService == null) {
-            showWelcome();
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (grantResults[0] == PackageManager.PERMISSION_GRANTED){
+            connectButton.callOnClick();
         }
     }
+
+
 
     /**
      * Ran by default if Bluetooth connection stops, will completely cancel
@@ -209,6 +218,7 @@ public class Bluetooth extends AppCompatActivity
     @Override
     public void onResume() {
         super.onResume();
+        registerReceiver(mReceiver, new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED));
 
         // Performing this check in onResume() covers the case in which BT was
         // not enabled during onStart(), so we were paused to enable it...
@@ -289,8 +299,9 @@ public class Bluetooth extends AppCompatActivity
                             break;
 
                         case BluetoothChatService.STATE_BLUETOOTH_OFF:
+                            Toast.makeText(getApplicationContext(), "Bluetooth disabled", Toast.LENGTH_SHORT).show();
                             netDiagram.setVisibility(View.INVISIBLE);
-                            onStart();
+                            showWelcome();
                             break;
 
                     }
@@ -342,30 +353,7 @@ public class Bluetooth extends AppCompatActivity
                 if (resultCode == Activity.RESULT_OK)
                 {
                     /**Bluetooth is enabled, can set up the chat service **/
-                    showWelcome();
-                }
-                else
-                {
-                    /** if user denies the request to enable Bluetooth, error message will pop up **/
-                    new AlertDialog.Builder(this)
-                            .setTitle("Error")
-                            .setMessage("Bluetooth is disabled")
-                            .setPositiveButton("ENABLE", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-
-                                    Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                                    startActivityForResult(enableIntent, 8);
-
-                                }
-                            })
-                            .setIcon(android.R.drawable.ic_dialog_alert)
-                            .setOnCancelListener(new DialogInterface.OnCancelListener() {
-                                @Override
-                                public void onCancel(DialogInterface dialog) {
-                                    onStart();
-                                }
-                            })
-                            .show();
+                    connectButton.callOnClick();
                 }
         }
     }
@@ -510,39 +498,6 @@ public class Bluetooth extends AppCompatActivity
         if (id == R.id.action_preferences) {
             Intent intent = new Intent(Bluetooth.this, Notifications.class);
             startActivity(intent);
-
-//        } else if (id == R.id.discovery) {
-//
-//            if (BAdapter.getScanMode() != BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE) {
-//                Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-//                discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
-//                startActivity(discoverableIntent);
-//            }
-//        } else if (id == R.id.bluetooth_status) {
-//            if (BAdapter.isEnabled()) {
-//                new AlertDialog.Builder(this)
-//                        .setTitle("Bluetooth Status")
-//                        .setMessage("Bluetooth is enabled")
-//                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-//                            public void onClick(DialogInterface dialog, int which) {
-//                                dialog.dismiss();
-//                            }
-//                        })
-//                        .setIcon(android.R.drawable.ic_dialog_info)
-//                        .show();
-//            } else {
-//                new AlertDialog.Builder(this)
-//                        .setTitle("Bluetooth Status")
-//                        .setMessage("Bluetooth is disabled")
-//                        .setPositiveButton("enable", new DialogInterface.OnClickListener() {
-//                            public void onClick(DialogInterface dialog, int which) {
-//                                Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-//                                startActivityForResult(enableIntent, 1);
-//                            }
-//                        })
-//                        .setIcon(android.R.drawable.ic_dialog_alert)
-//                        .show();
-//            }
         }
 
 
@@ -569,11 +524,11 @@ public class Bluetooth extends AppCompatActivity
                 notifMap.put(node.getMac()+"motion", Calendar.getInstance().getTimeInMillis());
                 // TODO: check if default value is same as default values in popups
                 if (node.isMotion() && sharedpreferences.getBoolean(getString(R.string.motionWhenDetected), true)) {
-                    title = database.getNodeName(node.getMac()) + ": motion sensor alert";
+                    title = database.getNodeName(node.getMac()) + ": Motion Alert";
                     content = "Motion is detected.";
                     createNotification(Calendar.getInstance().getTimeInMillis(), title, content, R.drawable.ic_motion_sensor);
                 } else if (!node.isMotion() && !sharedpreferences.getBoolean(getString(R.string.motionWhenDetected), true)) {
-                    title = database.getNodeName(node.getMac()) + ": motion sensor alert";
+                    title = database.getNodeName(node.getMac()) + ": Motion Alert";
                     content = "No motion is detected.";
                     createNotification(Calendar.getInstance().getTimeInMillis(), title, content, R.drawable.ic_motion_sensor);
                 }
@@ -592,15 +547,15 @@ public class Bluetooth extends AppCompatActivity
                 } else {
                     displayTemp = Double.toString(tempInC) + " °C";
                 }
-                if (!sharedpreferences.getBoolean(getString(R.string.tempOutside), false)) {
+                if (!sharedpreferences.getBoolean(getString(R.string.tempOutside), true)) {
                     if (tempInC >= lower && tempInC <= upper) {
-                        title = database.getNodeName(node.getMac()) + ": temperature sensor alert";
+                        title = database.getNodeName(node.getMac()) + ": Temperature Alert";
                         content = displayTemp;
                         createNotification(Calendar.getInstance().getTimeInMillis(), title, content, R.drawable.ic_temp_sensor);
                     }
                 } else {
                     if (tempInC < lower || tempInC > upper) {
-                        title = database.getNodeName(node.getMac()) + ": temperature sensor alert";
+                        title = database.getNodeName(node.getMac()) + ": Temperature Alert";
                         content = displayTemp;
                         createNotification(Calendar.getInstance().getTimeInMillis(), title, content, R.drawable.ic_temp_sensor);
                     }
@@ -616,15 +571,15 @@ public class Bluetooth extends AppCompatActivity
                 double lower = (double) sharedpreferences.getFloat(getString(R.string.lightLowBound), (float) 0);
                 double upper = (double) sharedpreferences.getFloat(getString(R.string.lightHighBound), (float) 0);
                 String displayLight = light + "%";
-                if (!sharedpreferences.getBoolean(getString(R.string.lightOutside), false)) {
+                if (!sharedpreferences.getBoolean(getString(R.string.lightOutside), true)) {
                     if (light >= lower && light <= upper) {
-                        title = database.getNodeName(node.getMac()) + ": ambient light sensor alert";
+                        title = database.getNodeName(node.getMac()) + ": Ambient Light Alert";
                         content = displayLight;
                         createNotification(Calendar.getInstance().getTimeInMillis(), title, content, R.drawable.ic_light_sensor);
                     }
                 } else {
                     if (light < lower || light > upper) {
-                        title = database.getNodeName(node.getMac()) + ": ambient light sensor alert";
+                        title = database.getNodeName(node.getMac()) + ": Ambient Light Alert";
                         content = displayLight;
                         createNotification(Calendar.getInstance().getTimeInMillis(), title, content, R.drawable.ic_light_sensor);
                     }
@@ -637,7 +592,7 @@ public class Bluetooth extends AppCompatActivity
                     (Calendar.getInstance().getTimeInMillis()-notifMap.get(node.getMac()+"battery"))<BATTERY_NOTIFICATION_WAIT_TIME_MS)) {
                 notifMap.put(node.getMac()+"battery", Calendar.getInstance().getTimeInMillis());
                 if (node.isBatteryLow()) {
-                    title = database.getNodeName(node.getMac()) + ": battery low";
+                    title = database.getNodeName(node.getMac()) + ": Battery Low";
                     content = "Charge node battery.";
                     createNotification(Calendar.getInstance().getTimeInMillis(), title, content, R.drawable.ic_battery);
                 }
@@ -653,23 +608,6 @@ public class Bluetooth extends AppCompatActivity
 
     private void createNotification(long when, String title, String content, int smallIcon)
     {
-
-//        String nodeName = database.getNodeName(MAC);
-
-//        String notificationContent;
-//        String notificationTitle;
-//        if(!type.equals("Motion")){
-//        notificationContent = type+" sensor "+ bound+" "+boundType+" at "+data;
-//        notificationTitle =nodeName+" node: "+type +" sensor alert";
-//        }else{
-//            notificationContent = type+" sensor detects no motion";
-//            notificationTitle =nodeName+" node: "+type +" sensor alert";
-//        }
-
-        //large icon for notification,normally use App icon
-//        Bitmap largeIcon = BitmapFactory.decodeResource(getResources(),android.R.drawable.ic_dialog_alert);
-//        int smallIcon =R.drawable.ic_final;
-        //String notificationData="This is data : "+data;
 
 		/*create intent for show notification details when user clicks notification*/
         Intent intent =new Intent(getApplicationContext(), Bluetooth.class);
