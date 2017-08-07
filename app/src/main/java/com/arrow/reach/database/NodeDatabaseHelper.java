@@ -1,11 +1,10 @@
-package com.example.a85314.meshnetwork.Database;
+package com.arrow.reach.database;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,7 +43,7 @@ public class NodeDatabaseHelper extends SQLiteOpenHelper {
 
     /**
      * Creates a new node database
-     * @param db
+     * @param db SQLite Database
      */
     @Override
     public void onCreate(SQLiteDatabase db) {
@@ -68,6 +67,11 @@ public class NodeDatabaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
+    /**
+     * Retrieves the name of a node
+     * @param MAC MAC adress of the node
+     * @return a <code>String</code> name of the node
+     */
     public String getNodeName(String MAC){
         SQLiteDatabase db = this.getReadableDatabase();
 
@@ -114,7 +118,7 @@ public class NodeDatabaseHelper extends SQLiteOpenHelper {
      * @param mac   MAC address of node to retrieve
      * @return      the <code>Node</code> from database
      */
-    public  Node getNode(String mac) {
+    private Node getNode(String mac) {
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.query(TABLE_REMOTES, new String[]{KEY_MAC,
@@ -196,7 +200,7 @@ public class NodeDatabaseHelper extends SQLiteOpenHelper {
                 new String[] { String.valueOf(node.getMac()) });
     }
 
-    public int updateNodeKeepName(Node node){
+    private int updateNodeKeepName(Node node){
 
         SQLiteDatabase db = this.getWritableDatabase();
         String oldName = getNode(node.getMac()).getName();
@@ -243,7 +247,6 @@ public class NodeDatabaseHelper extends SQLiteOpenHelper {
         if (node.getName()== null){
             values.put(KEY_NAME, node.getMac());
         } else {
-//            Log.i("databse", "builtContentValues assigned non-MAC name: "+node.getName());
             values.put(KEY_NAME, node.getName());
         }
         values.put(KEY_TEMP, node.getTemp());

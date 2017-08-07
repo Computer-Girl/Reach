@@ -36,6 +36,8 @@
     <string name="Bluetooth_title_connecting">connecting&#8230;</string>
     <string name="Bluetooth_title_connected_to">connected to <xliff:g id="device_name">%1$s</xliff:g></string>
     <string name="Bluetooth_title_not_connected">not connected</string>
+    <string name="welcome_title">Welcome to Reach</string>
+    <string name="welcome_instr">Tap below to connect to the Hub.</string>
 
 
     <!--  DeviceList -->
@@ -114,5 +116,22 @@
     <string name="neighboring_nodes">Neighboring Nodes:</string>
     <string name="low_batt">Low Battery!</string>
 
+    <!-- Alert Dialogs -->
+    <string name="not_compatible">Reach Is Not Compatible With Your Device</string>
+    <string name="does_not_support">Your phone does not support Bluetooth.</string>
+    <string name="exit">EXIT</string>
+    <string name="location_permission_title">Location Permission Needed</string>
+    <string name="location_permission_content">Please allow location permission for Bluetooth device discovery.</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+
+    <!-- Notification Content -->
+    <string name="motion_alert">: Motion Alert</string>
+    <string name="motion_is_detected">Motion is detected.</string>
+    <string name="motion_is_not_detected">Motion is not detected.</string>
+    <string name="temperature_alert">: Temperature Alert</string>
+    <string name="light_alert">: Ambient Light Alert</string>
+    <string name="battery_low">: Battery Low</string>
+    <string name="charge_node">Charge node battery.</string>
 </resources>
 

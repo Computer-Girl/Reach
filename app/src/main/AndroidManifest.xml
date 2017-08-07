@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:aapt="http://schemas.android.com/apk/res-auto"
-    package="com.example.a85314.meshnetwork">
+    package="com.arrow.reach">
 
     <!-- Used for bluetooth connectivity -->
     <uses-permission android:name="android.permission.BLUETOOTH" />
@@ -23,7 +22,7 @@
 
 
         <activity
-            android:name=".UI.Splash"
+            android:name="com.arrow.reach.ui.Splash"
             android:theme="@style/SplashTheme"
             android:screenOrientation="portrait"
             android:configChanges="orientation|screenSize">
@@ -36,18 +35,18 @@
         </activity>
 
         <activity
-            android:name=".Bluetooth.MainActivity"
+            android:name="com.arrow.reach.bluetooth.MainActivity"
             android:configChanges="orientation|screenSize"/>
 
         <activity
-            android:name=".Bluetooth.Bluetooth"
+            android:name="com.arrow.reach.bluetooth.Bluetooth"
             android:label="Network Diagram"
             android:screenOrientation="portrait"
             android:launchMode="singleTask"
             android:configChanges="orientation|screenSize"/>
 
         <activity
-            android:name=".Bluetooth.DeviceList"
+            android:name="com.arrow.reach.bluetooth.DeviceList"
             android:screenOrientation="portrait"
             android:configChanges="orientation|screenSize"
             android:label="@string/select_device"
@@ -55,9 +54,9 @@
 
 
         <activity
-            android:name=".Notifications.Notifications"
+            android:name="com.arrow.reach.notifications.Notifications"
             android:label="@string/navigation_action_notifications"
-            android:parentActivityName=".Bluetooth.Bluetooth"
+            android:parentActivityName="com.arrow.reach.bluetooth.Bluetooth"
             android:configChanges="orientation|screenSize"/>
 
 

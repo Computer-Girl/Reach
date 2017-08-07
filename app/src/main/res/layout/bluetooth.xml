@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/MainLayout"
     android:orientation="vertical"
     android:layout_width="match_parent"
@@ -9,7 +8,7 @@
     android:background="@color/colorWhite"
     >
 
-    <com.example.a85314.meshnetwork.UI.MeshNetDiagram
+    <com.arrow.reach.ui.MeshNetDiagram
         android:id="@+id/Net"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -24,7 +23,7 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="175dp"
-        android:text="Welcome to Reach"
+        android:text="@string/welcome_title"
         android:textColor="@android:color/black"
         android:textSize="30sp"
         android:textStyle="bold" />
@@ -37,7 +36,7 @@
         android:layout_centerHorizontal="true"
         android:paddingBottom="40dp"
         android:paddingTop="8dp"
-        android:text="Tap below to connect to the Hub."
+        android:text="@string/welcome_instr"
         android:textColor="@android:color/black"
         android:textSize="20sp" />
 

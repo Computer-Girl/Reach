@@ -1,10 +1,9 @@
-package com.example.a85314.meshnetwork.UI;
+package com.arrow.reach.ui;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import com.example.a85314.meshnetwork.Bluetooth.Bluetooth;
-import com.example.a85314.meshnetwork.R;
+import com.arrow.reach.bluetooth.Bluetooth;
 
 
 public class Splash extends AppCompatActivity

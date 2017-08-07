@@ -2,7 +2,6 @@
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Base.Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/reach_blue</item>
         <item name="colorAccent">@color/reach_blue_lite</item>
         <item name="colorControlActivated">@color/reach_blue</item>

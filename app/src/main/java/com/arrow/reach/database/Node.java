@@ -1,4 +1,4 @@
-package com.example.a85314.meshnetwork.Database;
+package com.arrow.reach.database;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,7 +31,7 @@ public class Node {
         return name;
     }
 
-    public  void setName(String name) {
+    public void setName(String name) {
         this.name = name;
     }
 
@@ -90,7 +90,7 @@ public class Node {
         return neighborMACtoLQI.get(neighborMAC);
     }
 
-    public boolean isConnected() {
+    boolean isConnected() {
         return connected;
     }
 

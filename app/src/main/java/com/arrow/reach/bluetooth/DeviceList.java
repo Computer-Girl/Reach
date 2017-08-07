@@ -1,6 +1,4 @@
-
-
-package com.example.a85314.meshnetwork.Bluetooth;
+package com.arrow.reach.bluetooth;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
@@ -12,17 +10,13 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.example.a85314.meshnetwork.R;
-
-import java.util.Set;
+import com.arrow.reach.R;
 
 /**
  * This Activity appears as a dialog. It lists any paired devices and
@@ -63,7 +57,6 @@ public class DeviceList extends Activity
         Log.i(TAG,"onCreate");
 
         // Setup the window
-//        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.device_list);
         progressBar = (ProgressBar) findViewById(R.id.progress_spinner);
         title = (TextView) findViewById(R.id.toolbar_title);
@@ -71,26 +64,8 @@ public class DeviceList extends Activity
         // Set result CANCELED in case the user backs out
         setResult(Activity.RESULT_CANCELED);
 
-        // Initialize the button to perform device discovery
-//        Button scanButton = (Button) findViewById(R.id.button_scan);
-//        scanButton.setOnClickListener(new View.OnClickListener()
-//        {
-//            public void onClick(View v) {
-//                doDiscovery();
-//                v.setVisibility(View.GONE);
-//            }
-//        });
-
-        // Initialize array adapters. One for already paired devices and
-        // one for newly discovered devices
-        ArrayAdapter<String> pairedDevicesArrayAdapter =
-                new ArrayAdapter<>(this, R.layout.device_name);
+        // Initialize array adapter
         mNewDevicesArrayAdapter = new ArrayAdapter<>(this, R.layout.device_name);
-
-        // Find and set up the ListView for paired devices
-        ListView pairedListView = (ListView) findViewById(R.id.paired_devices);
-        pairedListView.setAdapter(pairedDevicesArrayAdapter);
-//        pairedListView.setOnItemClickListener(mDeviceClickListener);
 
         // Find and set up the ListView for newly discovered devices
         ListView newDevicesListView = (ListView) findViewById(R.id.new_devices);
@@ -107,21 +82,6 @@ public class DeviceList extends Activity
 
         // Get the local Bluetooth adapter
         mBtAdapter = BluetoothAdapter.getDefaultAdapter();
-
-        // Get a set of currently paired devices
-        Set<BluetoothDevice> pairedDevices = mBtAdapter.getBondedDevices();
-
-        // If there are paired devices, add each one to the ArrayAdapter
-//        if (pairedDevices.size() > 0) {
-//            pairedListView.setOnItemClickListener(mDeviceClickListener);
-////            findViewById(R.id.title_paired_devices).setVisibility(View.VISIBLE);
-//            for (BluetoothDevice device : pairedDevices) {
-//                pairedDevicesArrayAdapter.add(device.getName() + "\n" + device.getAddress());
-//            }
-//        } else {
-////            String noDevices = getResources().getText(R.string.none_paired).toString();
-////            pairedDevicesArrayAdapter.add(noDevices);
-//        }
         doDiscovery();
     }
 
@@ -144,13 +104,9 @@ public class DeviceList extends Activity
     private void doDiscovery() {
 
         // Indicate scanning in the title
-//        setProgressBarIndeterminateVisibility(true);
         progressBar.setVisibility(View.VISIBLE);
-//        setTitle("Scanning . . . ");
         title.setText(getString(R.string.scanning));
 
-        // Turn on sub-title for new devices
-//        findViewById(R.id.title_new_devices).setVisibility(View.VISIBLE);
 
         // If we're already discovering, stop it
         if (mBtAdapter.isDiscovering())
@@ -217,9 +173,7 @@ public class DeviceList extends Activity
 
             else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action))
             {
-//                setProgressBarIndeterminateVisibility(false);
                 progressBar.setVisibility(View.INVISIBLE);
-//                setTitle("Select Device");
                 title.setText(getString(R.string.select_device));
                 if (mNewDevicesArrayAdapter.getCount() == 0)
                 {

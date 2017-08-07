@@ -1,4 +1,4 @@
-package com.example.a85314.meshnetwork.Notifications;
+package com.arrow.reach.notifications;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -24,7 +24,7 @@ import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 
-import com.example.a85314.meshnetwork.R;
+import com.arrow.reach.R;
 
 public class Notifications extends AppCompatActivity
 {
@@ -54,7 +54,6 @@ public class Notifications extends AppCompatActivity
         display.getSize(size);
         popupSize = (int) (size.x *.7);
 
-        // TODO: Add onClick Listeners here
         tempGear = (ImageButton) findViewById(R.id.temp_gear);
         tempGear.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -275,6 +274,9 @@ public class Notifications extends AppCompatActivity
             }
         }
 
+        /**
+         * Updates the popup elements according to the set preferences.
+         */
         void update(){
             String lowerBound = Float.toString(sharedPreferences.getFloat(getString(R.string.tempLowBound), 0));
             lowerEditText.setText(lowerBound.toCharArray(), 0 , lowerBound.length());
@@ -351,6 +353,9 @@ public class Notifications extends AppCompatActivity
             sharedPreferencesEditor.apply();
         }
 
+        /**
+         * Updates the popup elements according to the set preferences.
+         */
         void update(){
             String lowerBound = Float.toString(sharedPreferences.getFloat(getString(R.string.lightLowBound), 0));
             lowerEditText.setText(lowerBound.toCharArray(), 0 , lowerBound.length());
@@ -437,6 +442,9 @@ public class Notifications extends AppCompatActivity
             }
         }
 
+        /**
+         * Updates the popup elements according to the set preferences.
+         */
         void update(){
             if (sharedPreferences.getBoolean(getString(R.string.motionWhenDetected), true)){
                 spinner.setSelection(0);
