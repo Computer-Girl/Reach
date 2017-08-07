@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/MainLayout"
     android:orientation="vertical"
     android:layout_width="match_parent"
@@ -20,12 +21,13 @@
         android:id="@+id/welcome_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
         android:layout_marginTop="175dp"
         android:text="Welcome to Reach"
         android:textColor="@android:color/black"
         android:textSize="30sp"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/welcome_phrase"
@@ -33,22 +35,21 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/welcome_text"
         android:layout_centerHorizontal="true"
-        android:paddingBottom="50dp"
+        android:paddingBottom="40dp"
         android:paddingTop="8dp"
         android:text="Tap below to connect to the Hub."
         android:textColor="@android:color/black"
         android:textSize="20sp" />
 
-    <Button
+    <ImageButton
         android:id="@+id/connect_button"
-        android:layout_width="150dp"
-        android:layout_height="60dp"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         android:layout_below="@+id/welcome_phrase"
         android:layout_centerHorizontal="true"
-        android:backgroundTint="@color/reach_blue"
-        android:elevation="1dp"
-        android:text="Connect"
-        android:textColor="@android:color/white"
-        android:textSize="18sp" />
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:elevation="10dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/connect_button" />
 
 </RelativeLayout>

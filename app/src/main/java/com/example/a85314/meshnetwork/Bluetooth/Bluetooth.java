@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Activity;
@@ -14,6 +15,7 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.view.Display;
 import android.view.Menu;
 
 import android.Manifest;
@@ -29,7 +31,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
+import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.example.a85314.meshnetwork.Notifications.Notifications;
@@ -68,7 +71,7 @@ public class Bluetooth extends AppCompatActivity
 //    private Button scan_button;
 //    private DatabaseContract dbHelper;
     private TextView welcomeTitle, welcomePhrase;
-    private Button connectButton;
+    private ImageButton connectButton;
     private MeshNetDiagram netDiagram;
     private NodeDatabaseHelper database;
 
@@ -113,7 +116,15 @@ public class Bluetooth extends AppCompatActivity
 
         welcomeTitle = (TextView) findViewById(R.id.welcome_text);
         welcomePhrase = (TextView) findViewById(R.id.welcome_phrase);
-        connectButton = (Button) findViewById(R.id.connect_button);
+        connectButton = (ImageButton) findViewById(R.id.connect_button);
+        ViewGroup.LayoutParams params = connectButton.getLayoutParams();
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size= new Point();
+        display.getSize(size);
+        params.width = size.x / 5;
+        Log.i(TAG, "button width:"+params.width);
+        params.height = size.x / 5;
+        connectButton.setLayoutParams(params);
         connectButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
